@@ -25,6 +25,7 @@ ENV ID= \
 	MONGO= \
 	EXPORT_ENDPOINT= \
 	API_PORT= 
- 
+
+RUN pnpm run build
 CMD ["node", "."]
 
