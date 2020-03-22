@@ -1,4 +1,4 @@
-import { Command, Argument } from 'discord-akairo';
+import { Argument, Command, PrefixSupplier } from 'discord-akairo';
 import { Message } from 'discord.js';
 
 export default class PrefixCommand extends Command {
@@ -28,8 +28,9 @@ export default class PrefixCommand extends Command {
 
 	public async exec(msg: Message, { prefix }: { prefix: string | null }): Promise<Message | Message[]> {
 		if (prefix && !msg.guild) prefix = null;
+
 		if (!prefix) {
-			const prefix = msg.guild ? this.client.settings.guild.get(msg.guild.id)!.prefix : process.env.PREFIX;
+			const prefix = (this.handler.prefix as PrefixSupplier)(msg);
 			return msg.util!.reply(`the current prefix is \`${prefix}\`.`);
 		}
 

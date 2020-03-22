@@ -18,7 +18,7 @@ export default class InviteCommand extends Command {
 			.setDescription(stripIndents`
                 You can invite **${
 									this.client.user!.username
-								}** to your server with [this](https://archive-util.sycer.dev/) link!
+								}** to your server with [this](https://fyko.net/archive-util/) link!
                 You can join our **Support Server** by clicking [\`this link\`](https://fyko.net/discord)!
             `);
 

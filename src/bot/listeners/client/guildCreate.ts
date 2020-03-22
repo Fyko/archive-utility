@@ -12,12 +12,8 @@ export default class GuildCreateListener extends Listener {
 
 	public async exec(guild: Guild): Promise<void> {
 		this.client.logger.info(`[NEW GUILD] Joined a new server! ${guild.name} | ${guild.memberCount} Member(s)`);
-		const existing = this.client.settings.guild.get(guild.id);
-		if (!existing) {
-			await this.client.settings.new('guild', {
-				id: guild.id,
-			});
-		}
+		const existing = this.client.settings.cache.guilds.get(guild.id);
+		if (!existing) await this.client.settings.new('guild', { id: guild.id });
 
 		const embed = this.client.util
 			.embed()
@@ -42,7 +38,7 @@ export default class GuildCreateListener extends Listener {
 				}
 			}
 		} else {
-			const channel = guild.channels.find(
+			const channel = guild.channels.cache.find(
 				ch =>
 					ch.type === 'text' &&
 					ch.permissionsFor(this.client.user!.id)!.has('SEND_MESSAGES') &&
