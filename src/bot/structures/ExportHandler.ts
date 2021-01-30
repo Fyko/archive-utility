@@ -9,7 +9,7 @@ export default class ExportHandler {
 	}
 
 	public async createLog(channel: string): Promise<Buffer> {
-		const request = await fetch(`${process.env.EXPORT_ENDPOINT}/export`, {
+		const request = await fetch(`${process.env.EXPORT_ENDPOINT}/v1/export`, {
 			body: JSON.stringify({ channel, token: this.client.token }),
 			method: 'POST',
 			headers: {
