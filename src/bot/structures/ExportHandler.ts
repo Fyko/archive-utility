@@ -8,9 +8,9 @@ export default class ExportHandler {
 		this.client = client;
 	}
 
-	public async createLog(channel: string): Promise<Buffer> {
+	public async createLog(channelId: string): Promise<Buffer> {
 		const request = await fetch(`${process.env.EXPORT_ENDPOINT}/v1/export`, {
-			body: JSON.stringify({ channel, token: this.client.token }),
+			body: JSON.stringify({ channelId, token: this.client.token }),
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
