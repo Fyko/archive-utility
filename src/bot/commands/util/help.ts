@@ -2,16 +2,6 @@ import { stripIndents } from 'common-tags';
 import { Argument, Category, Command, PrefixSupplier } from 'discord-akairo';
 import { Message } from 'discord.js';
 
-export interface Emojis {
-	[key: string]: string;
-}
-
-const EMOJIS: Emojis = {
-	ADMIN: '👷‍♂️',
-	OWNER: '👑',
-	UTILITIES: '⚙',
-};
-
 export default class HelpCommand extends Command {
 	public constructor() {
 		super('help', {
@@ -50,7 +40,7 @@ export default class HelpCommand extends Command {
 		if (!arg) {
 			const embed = this.client.util
 				.embed()
-				.setColor(msg.guild?.me?.displayColor || this.client.config.color)
+				.setColor(msg.guild?.me?.displayColor ?? this.client.config.color)
 				.setTitle('📝 Commands').setDescription(stripIndents`
 					This is a list of the available categories and commands.
                     For more info on category or command, type \`${prefix}help <category/command>\`
@@ -59,11 +49,11 @@ export default class HelpCommand extends Command {
 			for (const category of this.handler.categories.values()) {
 				if (category.id === 'owner' && !this.client.ownerID.includes(msg.author.id)) continue;
 				const commands = category
-					.filter(c => c.aliases.length > 0)
-					.map(cmd => `\`${cmd.aliases[0]}\``)
+					.filter((c) => c.aliases.length > 0)
+					.map((cmd) => `\`${cmd.aliases[0]}\``)
 					.join(', ');
 				embed.addField(
-					`${EMOJIS[category.id.toUpperCase()]} ${category.id.replace(/(\b\w)/gi, lc => lc.toUpperCase())}`,
+					category.id.replace(/(\b\w)/gi, (lc) => lc.toUpperCase()),
 					commands,
 				);
 			}
@@ -73,12 +63,12 @@ export default class HelpCommand extends Command {
 		if (arg instanceof Command) {
 			const embed = this.client.util
 				.embed()
-				.setColor(msg.guild?.me?.displayColor || this.client.config.color)
+				.setColor(msg.guild?.me?.displayColor ?? this.client.config.color)
 				.setTitle(`\`${arg.aliases[0]} ${arg.description.usage ? arg.description.usage : ''}\``)
 				.addField('📁 Description', arg.description.content || '\u200b');
 
 			if (arg.aliases.length > 1) embed.addField('🎉 Aliases', `\`${arg.aliases.join('`, `')}\``);
-			if (arg.description.examples && arg.description.examples.length)
+			if (arg.description.examples?.length)
 				embed.addField(
 					'📁 Examples',
 					`\`${arg.aliases[0]} ${arg.description.examples.join(`\`\n\`${arg.aliases[0]} `)}\``,
@@ -87,23 +77,21 @@ export default class HelpCommand extends Command {
 			return msg.util!.send({ embed });
 		}
 
-		const name = arg.id.replace(/(\b\w)/gi, lc => lc.toUpperCase());
+		const name = arg.id.replace(/(\b\w)/gi, (lc) => lc.toUpperCase());
 		const embed = this.client.util
 			.embed()
-			.setColor(msg.guild?.me?.displayColor || this.client.config.color)
-			.setTitle(`${EMOJIS[arg.id.toUpperCase()]} ${name}`).setDescription(stripIndents`
+			.setColor(msg.guild?.me?.displayColor ?? this.client.config.color)
+			.setTitle(name).setDescription(stripIndents`
 				This is a list of all commands within the \`${name}\` category.
 				For more info on a command, type \`${prefix}help <command>\`
 			`);
 		const commands = arg
 			.array()
-			.filter(c => c.aliases.length > 0)
+			.filter((c) => c.aliases.length > 0)
 			.map(
-				cmd =>
+				(cmd) =>
 					`\`${cmd.aliases[0]}\`${
-						cmd.description && cmd.description.content
-							? ` - ${cmd.description.content.split('\n')[0].substring(0, 120)}`
-							: ''
+						cmd.description?.content ? ` - ${cmd.description.content.split('\n')[0].substring(0, 120)}` : ''
 					}`,
 			)
 			.join('\n');

@@ -12,7 +12,7 @@ export default class ReadyListener extends Listener {
 
 	public async exec(): Promise<void> {
 		this.client.logger.info(`[READY] ${this.client.user!.tag} is ready to host some giveaways.`);
-		this.client.archiveAPI.init();
+		void this.client.archiveAPI.init();
 
 		for (const id of this.client.guilds.cache.keys()) {
 			const existing = this.client.settings.cache.guilds.get(id);

@@ -23,14 +23,14 @@ export default class GuildCreateListener extends Listener {
 					this.client.user!.username
 				}! Thank's for inviting me to your guild. To get more information on how to use me, run \`arch!help\` or \`arch!guide\`.`,
 			)
-			.setColor(guild.me?.displayColor || this.client.config.color);
+			.setColor(guild.me?.displayColor ?? this.client.config.color);
 
 		if (guild.me?.hasPermission('VIEW_AUDIT_LOG')) {
 			const entries = await guild.fetchAuditLogs({
 				type: 28,
 			});
 			if (entries.entries.size) {
-				const theEntry = entries.entries.find(e => (e.target as User).id === this.client.user?.id);
+				const theEntry = entries.entries.find((e) => (e.target as User).id === this.client.user?.id);
 				if (theEntry) {
 					try {
 						await theEntry.executor.send({ embed });
@@ -39,7 +39,7 @@ export default class GuildCreateListener extends Listener {
 			}
 		} else {
 			const channel = guild.channels.cache.find(
-				ch =>
+				(ch) =>
 					ch.type === 'text' &&
 					ch.permissionsFor(this.client.user!.id)!.has('SEND_MESSAGES') &&
 					!ch.name.includes('general') &&

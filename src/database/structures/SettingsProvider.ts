@@ -20,9 +20,7 @@ interface Combo {
  * @private
  */
 export default class SettingsProvider {
-	protected readonly client: ArchiveClient;
-
-	protected readonly guilds: Collection<string, Guild> = new Collection();
+	protected readonly guilds = new Collection<string, Guild>();
 
 	protected readonly GuildModel = GuildModel;
 
@@ -32,13 +30,10 @@ export default class SettingsProvider {
 	 *
 	 * @param {GiveawayClient} client - The extended Akairo Client
 	 */
-	public constructor(client: ArchiveClient) {
-		this.client = client;
-	}
+	public constructor(protected readonly client: ArchiveClient) {}
 
 	/**
 	 * Retuns all the collection caches.
-	 * @returns {Object}
 	 */
 	public get cache() {
 		return {
@@ -68,7 +63,7 @@ export default class SettingsProvider {
 	 */
 	public async new(type: 'guild', data: Partial<Guild>): Promise<Guild>;
 	public async new(type: string, data: object): Promise<object> {
-		const combo = this.combos.find(c => c.key === type);
+		const combo = this.combos.find((c) => c.key === type);
 		if (combo) {
 			const document = new combo.model(data);
 			await document.save();
@@ -88,7 +83,7 @@ export default class SettingsProvider {
 	 */
 	public async set(type: 'guild', key: Partial<Guild>, data: Partial<Guild>): Promise<Guild | null>;
 	public async set(type: string, key: object, data: object): Promise<object | null> {
-		const combo = this.combos.find(c => c.key === type);
+		const combo = this.combos.find((c) => c.key === type);
 		if (combo) {
 			const document = await combo.model.findOneAndUpdate(key, { $set: data }, { new: true });
 			if (document) {
@@ -109,7 +104,7 @@ export default class SettingsProvider {
 	 */
 	public async remove(type: 'guild', data: Partial<Guild>): Promise<Guild | null>;
 	public async remove(type: string, data: object): Promise<object | null> {
-		const combo = this.combos.find(c => c.key === type);
+		const combo = this.combos.find((c) => c.key === type);
 		if (combo) {
 			const document = await combo.model.findOneAndRemove(data);
 			if (document) {

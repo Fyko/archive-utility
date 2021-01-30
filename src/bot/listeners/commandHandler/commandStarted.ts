@@ -24,7 +24,7 @@ export default class CommandStartedListener extends Listener {
 			.setTimestamp();
 		try {
 			const client = new WebhookClient(process.env.CMDLOGID!, process.env.CMDLOGTOKEN!);
-			client.send({ embeds: [embed] });
+			void client.send({ embeds: [embed] });
 		} catch (err) {
 			this.client.logger.error(`[CMD LOG ERROR]: ${err}`);
 		}

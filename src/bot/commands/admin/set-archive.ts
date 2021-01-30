@@ -27,8 +27,8 @@ export default class ArchiveChannelCommand extends Command {
 		});
 	}
 
-	public async exec(msg: Message, { channel }: { channel: TextChannel }): Promise<Message | Message[] | void> {
-		const guild = this.client.settings.cache.guilds.find(g => g.id === msg.guild?.id);
+	public async exec(msg: Message, { channel }: { channel?: TextChannel }): Promise<Message | Message[] | void> {
+		const guild = this.client.settings.cache.guilds.find((g) => g.id === msg.guild?.id);
 		if (!channel) {
 			if (guild?.archive && this.client.channels.cache.get(guild.archive))
 				return msg.util?.reply(

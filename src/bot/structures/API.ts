@@ -26,8 +26,8 @@ export default class API {
 		return this;
 	}
 
-	private async _listen(): Promise<number> {
-		await new Promise((resolve: () => void) => this.app.listen(this.port, resolve));
+	private _listen(): number {
+		this.app.listen(this.port);
 		this.client.logger.info(`[API]: API is live on port ${this.port}.`);
 		return this.port;
 	}

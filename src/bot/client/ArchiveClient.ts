@@ -1,26 +1,25 @@
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from 'discord-akairo';
-import { ColorResolvable, Message } from 'discord.js';
-import { createServer, Server } from 'http';
+import { ColorResolvable, Intents, Message } from 'discord.js';
 import { join } from 'path';
 import { Gauge, register } from 'prom-client';
-import { parse } from 'url';
 import { Logger } from 'winston';
 import { SettingsProvider } from '../../database';
-import { logger } from '../util/logger';
-import ExportHandler from '../structures/ExportHandler';
 import API from '../structures/API';
+import ExportHandler from '../structures/ExportHandler';
+import { logger } from '../util/logger';
 
 declare module 'discord-akairo' {
 	interface AkairoClient {
 		logger: Logger;
 		commandHandler: CommandHandler;
+		listenerHandler: ListenerHandler;
 		config: ArchiveOptions;
 		settings: SettingsProvider;
 		exportHandler: ExportHandler;
 		prometheus: {
-			messageCounter: Gauge;
-			userHistogram: Gauge;
-			guildHistogram: Gauge;
+			messageCounter: Gauge<string>;
+			userHistogram: Gauge<string>;
+			guildHistogram: Gauge<string>;
 		};
 
 		archiveAPI: API;
@@ -37,9 +36,10 @@ export default class ArchiveClient extends AkairoClient {
 	public constructor(config: ArchiveOptions) {
 		super({
 			messageCacheLifetime: 300,
-			messageCacheMaxSize: 50,
+			messageCacheMaxSize: 20,
 			messageSweepInterval: 900,
 			ownerID: config.owners,
+			ws: { intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] },
 		});
 
 		this.config = config;

@@ -31,7 +31,7 @@ export default class ArchiveCommand extends Command {
 		const guild = this.client.settings.cache.guilds.get(msg.guild!.id);
 		const prefix = (this.handler.prefix as PrefixSupplier)(msg);
 
-		if (!guild || !guild?.archive) {
+		if (!guild || !guild.archive) {
 			return msg.util?.reply(`there is no archive-channel set! Please set one with \`${prefix}help set-archive\``);
 		}
 
@@ -53,15 +53,14 @@ export default class ArchiveCommand extends Command {
 		const m = await msg.channel.send('Creating archive...');
 		const attachment = await this.client.exportHandler.createLog(channel.id);
 
-		if (!attachment) return msg.util?.reply(`process failed - I was unable to create an archive.`);
 		await m.edit(`Archive created! Sending to ${archive}...`);
 
 		const embed = this.client.util
 			.embed()
-			.setColor(msg.guild?.me?.displayColor || this.client.config.color)
+			.setColor(msg.guild?.me?.displayColor ?? this.client.config.color)
 			.setTimestamp()
 			.setTitle('Archived Channel')
-			.setAuthor(`Archived by ${msg.author?.username}`, msg.author?.displayAvatarURL({ size: 2048 }))
+			.setAuthor(`Archived by ${msg.author.username}`, msg.author.displayAvatarURL({ size: 2048 }))
 			.setDescription(`#${channel.name} has been archived`);
 
 		const sent = await archive.send({
@@ -91,6 +90,6 @@ export default class ArchiveCommand extends Command {
 			<${sent.url}>.
 		`);
 
-		if (channel.deletable) setTimeout(() => channel.delete().catch(() => undefined), 1000 * 5);
+		if (channel.deletable) setTimeout(() => void channel.delete().catch(() => undefined), 1000 * 5);
 	}
 }

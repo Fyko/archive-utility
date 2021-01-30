@@ -1,62 +1,64 @@
 {
-    "name": "archive-utility",
-    "version": "1.1.0",
-    "description": "a Discord bot to archive text-channels",
-    "main": "dist/index.js",
-    "scripts": {
-        "lint": "eslint src --ext .ts",
-        "lint:fix": "eslint src --fix --ext .ts",
-        "cleardir": "rimraf dist/*",
-        "compile": "tsc",
-        "build": "pnpm run cleardir && pnpm run compile",
-        "start": "pnpm run build && node ."
-    },
-    "author": "Carter Himmel <fyko@sycer.dev>",
-    "license": "GPL-3.0",
-    "dependencies": {
-        "common-tags": "^1.8.0",
-        "discord-akairo": "github:discord-akairo/discord-akairo",
-        "discord.js": "github:discordjs/discord.js",
-        "express": "^4.17.1",
-        "helmet": "^3.21.3",
-        "mongoose": "^5.9.5",
-        "node-fetch": "^2.6.0",
-        "prom-client": "^11.5.3",
-        "tslib": "^1.11.1"
-    },
-    "devDependencies": {
-        "@types/common-tags": "^1.8.0",
-        "@types/express": "^4.17.3",
-        "@types/helmet": "^0.0.45",
-        "@types/mongoose": "^5.7.7",
-        "@types/ms": "^0.7.31",
-        "@types/node": "^13.9.3",
-        "@types/node-fetch": "^2.5.5",
-        "@types/ws": "^7.2.3",
-        "@typescript-eslint/eslint-plugin": "^2.24.0",
-        "@typescript-eslint/parser": "^2.24.0",
-        "eslint": "^6.8.0",
-        "eslint-config-marine": "^6.0.0",
-        "eslint-config-prettier": "^6.10.1",
-        "eslint-plugin-prettier": "^3.1.2",
-        "prettier": "^1.19.1",
-        "rimraf": "^3.0.2",
-        "typescript": "^3.8.3",
-        "winston": "^3.2.1"
-    },
-    "optionalDependencies": {
-        "bufferutil": "^4.0.1",
-        "erlpack": "github:discordapp/erlpack",
-        "utf-8-validate": "^5.0.2",
-        "zlib-sync": "^0.1.6"
-    },
-    "eslintConfig": {
-        "extends": "marine/prettier/node",
-        "rules": {
-            "comma-dangle": [
-                "error",
-                "always-multiline"
-            ]
-        }
-    }
+	"name": "archive-utility",
+	"version": "1.1.0",
+	"description": "a Discord bot to archive text-channels",
+	"main": "dist/index.js",
+	"scripts": {
+		"lint": "eslint src --ext .ts",
+		"lint:fix": "eslint src --fix --ext .ts",
+		"build": "rimraf dist/* && tsc",
+		"prestart": "yarn build",
+		"start": "node ."
+	},
+	"author": "Carter Himmel <fyko@sycer.dev>",
+	"license": "GPL-3.0",
+	"dependencies": {
+		"common-tags": "^1.8.0",
+		"discord-akairo": "^8.1.0",
+		"discord.js": "^12.5.1",
+		"express": "^4.17.1",
+		"helmet": "^4.4.1",
+		"mongoose": "^5.11.14",
+		"node-fetch": "^2.6.1",
+		"prom-client": "^13.1.0",
+		"tslib": "^2.1.0"
+	},
+	"devDependencies": {
+		"@types/common-tags": "^1.8.0",
+		"@types/express": "^4.17.11",
+		"@types/mongoose": "^5.10.3",
+		"@types/ms": "^0.7.31",
+		"@types/node": "^14.14.22",
+		"@types/node-fetch": "^2.5.8",
+		"@types/ws": "^7.4.0",
+		"@typescript-eslint/eslint-plugin": "^4.14.1",
+		"@typescript-eslint/parser": "^4.14.1",
+		"eslint": "^7.18.0",
+		"eslint-config-marine": "^8.1.0",
+		"eslint-config-prettier": "^7.2.0",
+		"eslint-plugin-prettier": "^3.3.1",
+		"prettier": "^2.2.1",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.1.3",
+		"winston": "^3.3.3"
+	},
+	"optionalDependencies": {
+		"bufferutil": "^4.0.3",
+		"erlpack": "github:discord/erlpack",
+		"utf-8-validate": "^5.0.4",
+		"zlib-sync": "^0.1.7"
+	},
+	"eslintConfig": {
+		"extends": "marine/prettier/node",
+		"rules": {
+			"comma-dangle": [
+				"error",
+				"always-multiline"
+			],
+			"@typescript-eslint/naming-convention": "off",
+			"@typescript-eslint/ban-types": "off",
+			"@typescript-eslint/restrict-template-expressions": "off",
+			"@typescript-eslint/no-base-to-string": "off"
+		}
+	}
 }

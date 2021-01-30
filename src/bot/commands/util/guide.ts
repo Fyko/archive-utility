@@ -17,7 +17,7 @@ export default class GuildCommand extends Command {
 		const prefix = (this.handler.prefix as PrefixSupplier)(msg);
 		const embed = this.client.util
 			.embed()
-			.setColor(msg.guild?.me?.displayColor || this.client.config.color)
+			.setColor(msg.guild?.me?.displayColor ?? this.client.config.color)
 			.setTitle('Archive Utility Guide')
 			.setImage('https://i.imgur.com/tk2K5fi.png')
 			.addField(

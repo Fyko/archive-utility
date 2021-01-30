@@ -17,7 +17,7 @@ export default class ErrorHandler extends Listener {
 			msg.channel instanceof TextChannel &&
 			msg.channel.permissionsFor(this.client.user!)!.has('SEND_MESSAGES')
 		) {
-			msg.channel.send(['Looks like an error occured.', '```js', `${err}`, '```']);
+			void msg.channel.send(['Looks like an error occured.', '```js', `${err}`, '```']);
 		}
 	}
 }
