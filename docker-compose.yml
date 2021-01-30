@@ -12,5 +12,3 @@ services:
     image: fyko/export-api
     ports:
       - "2021:80"
-    expose:
-      - "2021"
