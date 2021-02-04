@@ -1,0 +1,41 @@
+name: Testing
+on: [push, pull_request]
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Node v14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run ESLint
+        uses: icrawl/action-eslint@v1
+
+  typescript:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Node v14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Register Problem Matcher
+        run: echo "##[add-matcher].github/tsc.json"
+
+      - name: Run TypeScript compiler
+        run: npm run build
