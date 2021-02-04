@@ -14,5 +14,3 @@ services:
 
   exportapi:
     image: fyko/export-api
-    ports:
-      - "2021:80"
