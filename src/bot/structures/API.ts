@@ -11,9 +11,9 @@ export default class API {
 		this.client = client;
 	}
 
-	private _sendMetrics(_: Request, res: Response): Response {
+	private async _sendMetrics(_: Request, res: Response): Promise<Response> {
 		res.setHeader('Content-Type', this.client.prometheus.register.contentType);
-		return res.status(200).send(this.client.prometheus.register.metrics());
+		return res.status(200).send(await this.client.prometheus.register.metrics());
 	}
 
 	private _initMiddleware(): this {
@@ -22,7 +22,7 @@ export default class API {
 	}
 
 	private _initRoutes(): this {
-		this.app.get('/metrics', (req, res) => this._sendMetrics(req, res));
+		this.app.get('/metrics', (req, res) => void this._sendMetrics(req, res));
 		return this;
 	}
 
