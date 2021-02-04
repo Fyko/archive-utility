@@ -90,6 +90,8 @@ export default class ArchiveCommand extends Command {
 			<${sent.url}>.
 		`);
 
+		this.client.prometheus.exportedChannels.inc();
+
 		if (channel.deletable) setTimeout(() => void channel.delete().catch(() => undefined), 1000 * 5);
 	}
 }

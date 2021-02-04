@@ -20,6 +20,7 @@ declare module 'discord-akairo' {
 			messageCounter: Gauge<string>;
 			userHistogram: Gauge<string>;
 			guildHistogram: Gauge<string>;
+			exportedChannels: Gauge<string>;
 		};
 
 		archiveAPI: API;
@@ -92,21 +93,35 @@ export default class ArchiveClient extends AkairoClient {
 
 	public settings: SettingsProvider = new SettingsProvider(this);
 
-	public prometheus = {
-		messageCounter: new Gauge({
-			name: 'archive_utility_messages_total',
-			help: 'Total number of messages Archive Utility has seen.',
-		}),
-		userHistogram: new Gauge({
-			name: 'archive_utility_user_histogram',
-			help: 'Histogram of all users Archive Utility has seen.',
-		}),
-		guildHistogram: new Gauge({
-			name: 'archive_utility_guild_histogram',
-			help: 'Histogram of all users Archive Utility has seen.',
-		}),
-		register,
-	};
+	public prometheus = (() => {
+		// eslint-disable-next-line
+		const client = this;
+		return {
+			messageCounter: new Gauge({
+				name: 'archive_utility_messages_total',
+				help: 'Total number of messages Archive Utility has seen.',
+			}),
+			userHistogram: new Gauge({
+				name: 'archive_utility_user_histogram',
+				help: 'Histogram of all users Archive Utility has seen.',
+				collect: function () {
+					return this.set(client.guilds.cache.reduce((acc, g) => (acc += g.memberCount), 0));
+				},
+			}),
+			guildHistogram: new Gauge({
+				name: 'archive_utility_guild_histogram',
+				help: 'Histogram of all users Archive Utility has seen.',
+				collect: function () {
+					this.set(client.guilds.cache.size);
+				},
+			}),
+			exportedChannels: new Gauge({
+				name: 'archive_utility_channels_exported',
+				help: 'Total number of archived channels',
+			}),
+			register,
+		};
+	})();
 
 	public readonly archiveAPI: API = new API(this);
 

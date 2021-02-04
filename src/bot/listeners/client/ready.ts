@@ -20,22 +20,5 @@ export default class ReadyListener extends Listener {
 		}
 
 		await this.client.user?.setActivity(`arch!info - fyko.net/archive-util`, { type: 'WATCHING' });
-
-		setInterval(() => this._clearPresences(), 9e5);
-
-		setInterval(() => {
-			const userCount = this.client.guilds.cache.reduce((acc, g): number => (acc = Number(g.memberCount)), 0);
-			this.client.prometheus.userHistogram.set(userCount);
-			this.client.prometheus.guildHistogram.set(this.client.guilds.cache.size);
-		}, 1000 * 15);
-	}
-
-	private _clearPresences(): void {
-		const i = this.client.guilds.cache.reduce((acc: number, g: Guild): number => {
-			acc += g.presences.cache.size;
-			g.presences.cache.clear();
-			return acc;
-		}, 0);
-		this.client.emit('debug', `[PRESNCES]: Swept ${i} presences in ${this.client.guilds.cache.size} guilds.`);
 	}
 }
