@@ -1,5 +1,5 @@
 import { Listener } from 'discord-akairo';
-import { Guild, TextChannel, User } from 'discord.js';
+import type { Guild, TextChannel, User } from 'discord.js';
 
 export default class GuildCreateListener extends Listener {
 	public constructor() {

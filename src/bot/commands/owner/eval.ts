@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { Command } from 'discord-akairo';
-import { Message } from 'discord.js';
+import type { Message } from 'discord.js';
 import util from 'util';
 import { postHaste } from '../../util';
 import { MESSAGES, SENSITIVE_PATTERN_REPLACEMENT } from '../../util/Constants';

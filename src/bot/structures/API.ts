@@ -1,5 +1,5 @@
 import express, { Application, Request, Response } from 'express';
-import ArchiveClient from '../client/ArchiveClient';
+import type ArchiveClient from '../client/ArchiveClient';
 import helmet from 'helmet';
 
 export default class API {

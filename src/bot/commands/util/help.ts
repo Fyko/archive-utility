@@ -1,6 +1,6 @@
 import { stripIndents } from 'common-tags';
 import { Argument, Category, Command, PrefixSupplier } from 'discord-akairo';
-import { Message } from 'discord.js';
+import type { Message } from 'discord.js';
 
 export default class HelpCommand extends Command {
 	public constructor() {

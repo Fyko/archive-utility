@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { Message } from 'discord.js';
+import type { Message } from 'discord.js';
 import { stripIndents } from 'common-tags';
 
 export default class InviteCommand extends Command {

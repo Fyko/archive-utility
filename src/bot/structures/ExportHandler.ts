@@ -1,4 +1,4 @@
-import ArchiveClient from '../client/ArchiveClient';
+import type ArchiveClient from '../client/ArchiveClient';
 import fetch from 'node-fetch';
 
 export default class ExportHandler {

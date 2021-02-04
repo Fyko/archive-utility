@@ -1,9 +1,9 @@
 import { Collection } from 'discord.js';
-import { connect, Model, connection, Connection } from 'mongoose';
-import { Logger } from 'winston';
+import { connect, connection, Connection, Model } from 'mongoose';
+import type { Logger } from 'winston';
+import type ArchiveClient from '../../bot/client/ArchiveClient';
 import GuildModel, { Guild } from '../models/Guild';
 import { MONGO_EVENTS } from '../util/constants';
-import ArchiveClient from '../../bot/client/ArchiveClient';
 
 /**
  * The key, model and cached collection of a database model.

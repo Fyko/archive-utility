@@ -1,6 +1,6 @@
 import { stripIndents } from 'common-tags';
 import { Command, PrefixSupplier } from 'discord-akairo';
-import { Message } from 'discord.js';
+import type { Message } from 'discord.js';
 
 export default class GuildCommand extends Command {
 	public constructor() {

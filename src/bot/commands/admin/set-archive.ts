@@ -1,5 +1,5 @@
 import { Command } from 'discord-akairo';
-import { Message, TextChannel } from 'discord.js';
+import type { Message, TextChannel } from 'discord.js';
 
 export default class ArchiveChannelCommand extends Command {
 	public constructor() {

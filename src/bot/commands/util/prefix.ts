@@ -1,5 +1,5 @@
 import { Argument, Command, PrefixSupplier } from 'discord-akairo';
-import { Message } from 'discord.js';
+import type { Message } from 'discord.js';
 
 export default class PrefixCommand extends Command {
 	public constructor() {
