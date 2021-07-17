@@ -1,6 +1,7 @@
 import { oneLine, stripIndents } from 'common-tags';
 import { Command, PrefixSupplier } from 'discord-akairo';
-import { Message, TextChannel } from 'discord.js';
+import { Message, Permissions, TextChannel } from 'discord.js';
+import { displayHTML } from '../../util';
 
 export default class ArchiveCommand extends Command {
 	public constructor() {
@@ -18,7 +19,7 @@ export default class ArchiveCommand extends Command {
 					},
 				},
 			],
-			userPermissions: ['MANAGE_CHANNELS'],
+			userPermissions: [Permissions.FLAGS.MANAGE_CHANNELS],
 			description: {
 				content: 'Creates an archive of a channel then sends it to the configured archive channel',
 				usage: '<channel>',
@@ -42,7 +43,11 @@ export default class ArchiveCommand extends Command {
 			);
 		}
 
-		if (!archive.permissionsFor(this.client.user!.id)?.has(['SEND_MESSAGES', 'EMBED_LINKS', 'ATTACH_FILES'])) {
+		if (
+			!archive
+				.permissionsFor(this.client.user!.id)
+				?.has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS, Permissions.FLAGS.ATTACH_FILES])
+		) {
 			return msg.util?.reply(
 				`I don't have enough permissions to send messages in ${channel}! Please make sure I have \`Send Messages\`, \`Embed Links\` and \`Attach Files\`.`,
 			);
@@ -79,7 +84,7 @@ export default class ArchiveCommand extends Command {
 			embed.addField(
 				'Actions',
 				oneLine`
-					**[\(Open in Browser\)](https://fyko.net/transcript?uri=${sent.attachments.first()?.url})** - 
+					**[\(Open in Browser\)](${displayHTML(sent.attachments.first()!.url)})** - 
 					**[\(Download Archive\)](${sent.attachments.first()?.url})**
 				`,
 			),

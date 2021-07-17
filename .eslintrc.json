@@ -1,0 +1,14 @@
+{
+	"extends": "marine/prettier/node",
+	"rules": {
+		"comma-dangle": [
+			"error",
+			"always-multiline"
+		],
+		"@typescript-eslint/naming-convention": "off",
+		"@typescript-eslint/ban-types": "off",
+		"@typescript-eslint/restrict-template-expressions": "off",
+		"@typescript-eslint/no-base-to-string": "off",
+		"@typescript-eslint/space-before-function-paren": "off"
+	}
+}

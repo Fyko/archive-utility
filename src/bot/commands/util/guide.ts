@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 import { stripIndents } from 'common-tags';
 import { Command, PrefixSupplier } from 'discord-akairo';
 import type { Message } from 'discord.js';

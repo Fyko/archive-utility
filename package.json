@@ -26,8 +26,6 @@
 	"devDependencies": {
 		"@types/common-tags": "^1.8.0",
 		"@types/express": "^4.17.11",
-		"@types/mongoose": "^5.10.3",
-		"@types/ms": "^0.7.31",
 		"@types/node": "^14.14.24",
 		"@types/node-fetch": "^2.5.8",
 		"@types/ws": "^7.4.0",
@@ -47,18 +45,5 @@
 		"erlpack": "github:discord/erlpack",
 		"utf-8-validate": "^5.0.4",
 		"zlib-sync": "^0.1.7"
-	},
-	"eslintConfig": {
-		"extends": "marine/prettier/node",
-		"rules": {
-			"comma-dangle": [
-				"error",
-				"always-multiline"
-			],
-			"@typescript-eslint/naming-convention": "off",
-			"@typescript-eslint/ban-types": "off",
-			"@typescript-eslint/restrict-template-expressions": "off",
-			"@typescript-eslint/no-base-to-string": "off"
-		}
 	}
 }

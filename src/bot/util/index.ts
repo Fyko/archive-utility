@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { URLSearchParams } from 'url';
 
 export async function postHaste(code: string, lang?: string): Promise<string> {
 	try {
@@ -14,4 +15,11 @@ export async function postHaste(code: string, lang?: string): Promise<string> {
 	} catch (err) {
 		throw err;
 	}
+}
+
+export function displayHTML(attachmentUri: string, displayAt = process.env.DISPLAY_HTML_URL): string {
+	const q = new URLSearchParams();
+	q.set('uri', attachmentUri);
+
+	return `${displayAt}?${q}`;
 }
