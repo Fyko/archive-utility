@@ -1,0 +1,13 @@
+mutation UpsertServer($id: String!) {
+	insert_archive_utility_server(
+		objects: { id: $id }
+		on_conflict: { constraint: server_pkey, update_columns: [updated_at] }
+	) {
+		returning {
+			id
+			archive_channel
+			created_at
+			updated_at
+		}
+	}
+}
