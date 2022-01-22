@@ -1,0 +1,17 @@
+overwrite: true
+config:
+  scalars:
+    uuid: string
+schema:
+  - http://localhost:8080/v1/graphql:
+      headers:
+        x-hasura-admin-secret: 'admin'
+documents: 'src/util/gql/(queries|mutations|subscriptions)/*.graphql'
+generates:
+  src/util/gql/generated.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-graphql-request'
