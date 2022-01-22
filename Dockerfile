@@ -15,4 +15,4 @@ RUN yarn install
 COPY . .
 
 RUN yarn run build
-CMD ["node", "."]
+CMD ["yarn", "start"]

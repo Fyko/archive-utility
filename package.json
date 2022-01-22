@@ -8,8 +8,7 @@
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "eslint src --fix --ext .ts",
 		"build": "rimraf dist/* && tsc",
-		"prestart": "yarn build",
-		"postbuild": "npm run copy-locales",
+		"postbuild": "yarn run copy-locales",
 		"copy-locales": "cpy locales/**/*.* dist/ --parents",
 		"start": "node --enable-source-maps --es-module-specifier-resolution=node .",
 		"generate": "VERBOSE=1 DEBUG=1 graphql-codegen --config codegen.yml"
