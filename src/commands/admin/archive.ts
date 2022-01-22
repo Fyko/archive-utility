@@ -46,7 +46,7 @@ export default class implements Command {
 			});
 		}
 
-		const archiveChannel = await interaction.guild?.channels.fetch(settings?.archive_channel).catch(() => null);
+		const archiveChannel = await interaction.guild?.channels.fetch(settings.archive_channel).catch(() => null);
 		if (!archiveChannel || !archiveChannel.isText()) {
 			return interaction.reply({
 				content: i18next.t('commands.archive.archive_channel_deleted', { lng: locale }),

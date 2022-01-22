@@ -83,6 +83,7 @@ type TypeIdToType<T, O, C> = T extends ApplicationCommandOptionType.Subcommand
 			| Role /* | APIRole */
 	: never;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type OptionToObject<O> = O extends {
 	name: infer K;
 	type: infer T;
