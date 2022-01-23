@@ -43,3 +43,8 @@ wercker.yml
 
 # misc
 *.md
+dist
+.vscode
+hasura
+legal
+
