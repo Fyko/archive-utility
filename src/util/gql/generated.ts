@@ -720,7 +720,7 @@ export type CreateServerMutation = { __typename?: 'mutation_root', insert_archiv
 
 export type UpdateArchiveChannelMutationVariables = Exact<{
   server_id: Scalars['String'];
-  archive_id: Scalars['String'];
+  archive_id?: InputMaybe<Scalars['String']>;
 }>;
 
 
@@ -763,7 +763,7 @@ export const CreateServerDocument = gql`
 }
     `;
 export const UpdateArchiveChannelDocument = gql`
-    mutation UpdateArchiveChannel($server_id: String!, $archive_id: String!) {
+    mutation UpdateArchiveChannel($server_id: String!, $archive_id: String) {
   update_archive_utility_server_by_pk(
     pk_columns: {id: $server_id}
     _set: {archive_channel: $archive_id}

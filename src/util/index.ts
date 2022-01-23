@@ -28,6 +28,14 @@ export async function postHaste(code: string, lang?: string): Promise<string> {
 	}
 }
 
+export function list(arr: string[], conj = 'and'): string {
+	const len = arr.length;
+	if (len === 0) return '';
+	if (len === 1) return arr[0];
+
+	return `${arr.slice(0, -1).join(', ')}${len > 1 ? `${len > 2 ? ',' : ''} ${conj} ` : ''}${arr.slice(-1)}`;
+}
+
 export function displayHTML(attachmentUri: string, displayAt = process.env.DISPLAY_HTML_URL): string {
 	const q = new URLSearchParams();
 	q.set('uri', attachmentUri);
@@ -35,16 +43,17 @@ export function displayHTML(attachmentUri: string, displayAt = process.env.DISPL
 	return `${displayAt}?${q}`;
 }
 
-async function walk(path: string) {
+async function walk(path: string, notInclude: string[] = []) {
 	return (
 		await scan(path, {
-			filter: (stats) => stats.isFile() && ['.js', '.ts'].includes(extname(stats.name)),
+			filter: (stats, path) =>
+				stats.isFile() && ['.js', '.ts'].includes(extname(stats.name)) && !notInclude.some((n) => path.includes(n)),
 		})
 	).keys();
 }
 
 export async function loadCommands(commandStore: Collection<string, Command>) {
-	const files = await walk(fileURLToPath(new URL('../commands', import.meta.url)));
+	const files = await walk(fileURLToPath(new URL('../commands', import.meta.url)), ['sub']);
 
 	for (const file of files) {
 		const command = container.resolve<Command>((await import(file)).default);

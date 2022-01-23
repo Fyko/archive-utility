@@ -15,11 +15,11 @@ export default class implements Listener {
 
 	public exec = (): void => {
 		this.client.on(this.event, (interaction) => {
-			if (interaction.isCommand()) void this.handleCommand(interaction);
+			if (interaction.isCommand() && interaction.inCachedGuild()) void this.handleCommand(interaction);
 		});
 	};
 
-	private readonly handleCommand = async (interaction: CommandInteraction): Promise<void> => {
+	private readonly handleCommand = async (interaction: CommandInteraction<'cached'>): Promise<void> => {
 		const name = interaction.commandName;
 		const command = this.commands.get(name);
 		if (command) {

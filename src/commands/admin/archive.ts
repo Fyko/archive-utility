@@ -3,8 +3,10 @@ import type { Command, ExportHandler } from '#structs';
 import { ArgumentsOf, Colors, displayHTML, kExportHandler } from '#util';
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
 import { CommandInteraction, GuildMember, MessageEmbed, Permissions } from 'discord.js';
+import { ChannelTypes } from 'discord.js/typings/enums';
 import i18next from 'i18next';
 import { inject, injectable } from 'tsyringe';
+import { logger } from '#logger';
 
 const data = {
 	name: 'archive',
@@ -14,7 +16,13 @@ const data = {
 			name: 'channel',
 			description: 'The channel to archive.',
 			type: ApplicationCommandOptionType.Channel,
+			channel_types: [ChannelTypes.GUILD_TEXT],
 			required: true,
+		},
+		{
+			name: 'cleanup',
+			description: 'Whether or not to delete the channel after creating an archive (default: false)',
+			type: ApplicationCommandOptionType.Boolean,
 		},
 	],
 } as const;
@@ -25,7 +33,7 @@ export default class implements Command {
 
 	public readonly data = data;
 
-	public async exec(interaction: CommandInteraction, { channel }: ArgumentsOf<typeof data>, locale: string) {
+	public async exec(interaction: CommandInteraction, { channel, cleanup }: ArgumentsOf<typeof data>, locale: string) {
 		if (!interaction.inGuild())
 			return interaction.reply({ content: i18next.t('common.errors.guild_only_command', { lng: locale }) });
 
@@ -50,13 +58,6 @@ export default class implements Command {
 		if (!archiveChannel || !archiveChannel.isText()) {
 			return interaction.reply({
 				content: i18next.t('commands.archive.archive_channel_deleted', { lng: locale }),
-				ephemeral: true,
-			});
-		}
-
-		if (!channel.isText()) {
-			return interaction.reply({
-				content: i18next.t('commands.archive.only_archive_text', { lng: locale }),
 				ephemeral: true,
 			});
 		}
@@ -130,10 +131,6 @@ export default class implements Command {
 			],
 		});
 
-		await interaction.editReply(
-			i18next.t('commands.archive.created_wrapup', { lng: locale, channel: archiveChannel.toString() }),
-		);
-
 		await sent.edit({
 			embeds: [
 				embed.addField(
@@ -147,7 +144,7 @@ export default class implements Command {
 			],
 		});
 
-		await hasuraClient.CreateArchive({
+		const archiveRecord = await hasuraClient.CreateArchive({
 			options: {
 				channel_id: archiveChannel.id,
 				channel_name: archiveChannel.id,
@@ -155,11 +152,16 @@ export default class implements Command {
 				server_id: interaction.guildId,
 			},
 		});
+		logger.debug(archiveRecord);
 
-		setTimeout(() => void channel.delete(), 5000);
+		if (cleanup === true) setTimeout(() => void channel.delete(), 5000);
 
 		return interaction.editReply(
-			i18next.t('commands.archive.done', { lng: locale, channel: channel.name, sent_url: sent.url }),
+			i18next.t('commands.archive.done', {
+				lng: locale,
+				channel: channel.name,
+				sent_url: sent.url,
+			}),
 		);
 	}
 }

@@ -7,7 +7,7 @@
 	"scripts": {
 		"lint": "eslint src --ext .ts",
 		"lint:fix": "eslint src --fix --ext .ts",
-		"build": "rimraf dist/* && tsc",
+		"build": "rimraf dist/* && tsc && yarn postbuild",
 		"postbuild": "yarn run copy-locales",
 		"copy-locales": "cpy locales/**/*.* dist/ --parents",
 		"start": "node --enable-source-maps --es-module-specifier-resolution=node .",
@@ -23,7 +23,7 @@
 	"author": "Carter Himmel <fyko@sycer.dev>",
 	"license": "GPL-3.0",
 	"dependencies": {
-		"@discordjs/builders": "^0.4.0",
+		"@discordjs/builders": "^0.11.0",
 		"@discordjs/collection": "^0.3.2",
 		"@discordjs/rest": "^0.2.0-canary.0",
 		"common-tags": "^1.8.0",
@@ -58,6 +58,7 @@
 		"@typescript-eslint/eslint-plugin": "^4.14.2",
 		"@typescript-eslint/parser": "^4.14.2",
 		"cpy-cli": "^3.1.1",
+		"discord-api-types": "^0.26.1",
 		"eslint": "^7.19.0",
 		"eslint-config-marine": "^8.1.0",
 		"eslint-config-prettier": "^7.2.0",
@@ -76,5 +77,6 @@
 	},
 	"volta": {
 		"node": "16.13.2"
-	}
+	},
+	"packageManager": "yarn@3.2.0-rc.11"
 }

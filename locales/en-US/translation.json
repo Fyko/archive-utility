@@ -12,8 +12,7 @@
 			"only_archive_text": "You can only archive text channels!",
 			"creating": "Creating archive...",
 			"created": "Archive created! Sending to {{- channel}}...",
-			"created_wrapup": "Successfully sent to {{- channel}}! Deleting local archive...",
-			"done": "Successfully archived `#{{channel}}`! Deleting channel in 5 seconds...\n\n<{{- sent_url}}>",
+			"done": "Successfully archived `#{{channel}}`!\n<{{- sent_url}}>",
 			"perms": {
 				"client": {
 					"cant_send_archive": "I don't have enough permissions to send messages in {{channel}}! Please make sure I have `Send Messages`, `Embed Links` and `Attach Files`.",

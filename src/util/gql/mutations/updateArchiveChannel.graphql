@@ -1,4 +1,4 @@
-mutation UpdateArchiveChannel($server_id: String!, $archive_id: String!) {
+mutation UpdateArchiveChannel($server_id: String!, $archive_id: String) {
 	update_archive_utility_server_by_pk(pk_columns: { id: $server_id }, _set: { archive_channel: $archive_id }) {
 		id
 		archive_channel

@@ -9,8 +9,8 @@ export interface Command {
 	readonly data: { name: string } & Record<string, unknown>;
 
 	predicate?(
-		interaction: CommandInteraction,
+		interaction: CommandInteraction<'cached'>,
 	): Promise<FailedPredicateResponse> | Promise<boolean> | FailedPredicateResponse | boolean;
 
-	exec(interaction: CommandInteraction, args: unknown, locale: string): unknown | Promise<unknown>;
+	exec(interaction: CommandInteraction<'cached'>, args: unknown, locale: string): unknown | Promise<unknown>;
 }
