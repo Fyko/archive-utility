@@ -28,10 +28,17 @@
 					"author": {
 						"name": "Archived by {{- user}}"
 					},
+					"fields": {
+						"channel_info": {
+							"title": "Channel Info",
+							"value": "**Channel Age**: {{channel_age}}\n**First Message Author**: {{- first_message_author}}\n**Last Message Author**: {{- last_message_author}}"
+						}
+					},
 					"description": "#{{- channel}} has been archived!",
 					"edit": {
 						"actions_title": "Actions",
 						"actions_content": "**[(Open in Browser)]({{- display_html}})** - **[(Download Archive)]({{- download_link}})**",
+						"actions_content_non_html": "**[(Download Archive)]({{- download_link}})**",
 						"open_in_browser": "Open In Browser",
 						"download_archive": "Download Archive"
 					}

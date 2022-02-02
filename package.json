@@ -27,6 +27,7 @@
 		"@discordjs/collection": "^0.3.2",
 		"@discordjs/rest": "^0.2.0-canary.0",
 		"common-tags": "^1.8.0",
+		"date-fns": "^2.28.0",
 		"discord.js": "^13.4.0",
 		"express": "^4.17.1",
 		"fs-nextra": "^0.5.1",

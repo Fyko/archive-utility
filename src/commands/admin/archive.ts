@@ -1,12 +1,12 @@
 import { hasuraClient } from '#hasura';
-import type { Command, ExportHandler } from '#structs';
+import { logger } from '#logger';
+import { Command, ExportFormat, ExportHandler, ExportFormatExtensions } from '#structs';
 import { ArgumentsOf, Colors, displayHTML, kExportHandler } from '#util';
-import { ApplicationCommandOptionType } from 'discord-api-types/v9';
+import { formatDistanceToNow } from 'date-fns';
+import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9';
 import { CommandInteraction, GuildMember, MessageEmbed, Permissions } from 'discord.js';
-import { ChannelTypes } from 'discord.js/typings/enums';
 import i18next from 'i18next';
 import { inject, injectable } from 'tsyringe';
-import { logger } from '#logger';
 
 const data = {
 	name: 'archive',
@@ -16,13 +16,46 @@ const data = {
 			name: 'channel',
 			description: 'The channel to archive.',
 			type: ApplicationCommandOptionType.Channel,
-			channel_types: [ChannelTypes.GUILD_TEXT],
+			channel_types: [ChannelType.GuildText],
 			required: true,
 		},
 		{
 			name: 'cleanup',
 			description: 'Whether or not to delete the channel after creating an archive (default: false)',
 			type: ApplicationCommandOptionType.Boolean,
+		},
+		{
+			name: 'archive',
+			description: 'The channel to post the archive in, overrides the configured archive channel.',
+			type: ApplicationCommandOptionType.Channel,
+			channel_types: [ChannelType.GuildText],
+		},
+		{
+			name: 'format',
+			description: 'The format to export the channel to (default: dark mode)',
+			type: ApplicationCommandOptionType.Integer,
+			choices: [
+				{
+					name: 'Dark Mode',
+					value: ExportFormat.HtmlDark,
+				},
+				{
+					name: 'Light Mode',
+					value: ExportFormat.HtmlLight,
+				},
+				{
+					name: 'Plain Text (TXT)',
+					value: ExportFormat.PlainText,
+				},
+				{
+					name: 'CSV',
+					value: ExportFormat.CSV,
+				},
+				{
+					name: 'JSON',
+					value: ExportFormat.JSON,
+				},
+			],
 		},
 	],
 } as const;
@@ -33,7 +66,11 @@ export default class implements Command {
 
 	public readonly data = data;
 
-	public async exec(interaction: CommandInteraction, { channel, cleanup }: ArgumentsOf<typeof data>, locale: string) {
+	public async exec(
+		interaction: CommandInteraction,
+		{ channel, cleanup, format, archive }: ArgumentsOf<typeof data>,
+		locale: string,
+	) {
 		if (!interaction.inGuild())
 			return interaction.reply({ content: i18next.t('common.errors.guild_only_command', { lng: locale }) });
 
@@ -54,8 +91,10 @@ export default class implements Command {
 			});
 		}
 
-		const archiveChannel = await interaction.guild?.channels.fetch(settings.archive_channel).catch(() => null);
-		if (!archiveChannel || !archiveChannel.isText()) {
+		const archiveChannel =
+			archive ?? (await interaction.guild?.channels.fetch(settings.archive_channel).catch(() => null));
+
+		if (!archiveChannel?.isText()) {
 			return interaction.reply({
 				content: i18next.t('commands.archive.archive_channel_deleted', { lng: locale }),
 				ephemeral: true,
@@ -76,7 +115,7 @@ export default class implements Command {
 			});
 		}
 
-		if (!channel.deletable)
+		if (!channel.deletable || !channel.isText())
 			return interaction.reply({
 				content: i18next.t('commands.archive.perms.client.cant_delete', {
 					lng: locale,
@@ -90,7 +129,7 @@ export default class implements Command {
 				lng: locale,
 			}),
 		);
-		const attachment = await this.exportHandler.createLog(channel.id);
+		const attachment = await this.exportHandler.createLog(channel.id, format);
 
 		await interaction.editReply(
 			i18next.t('commands.archive.created', {
@@ -98,6 +137,9 @@ export default class implements Command {
 				channel: archiveChannel.toString(),
 			}),
 		);
+
+		const lastMessage = (await channel.messages.fetch({ limit: 1, after: channel.id })).first();
+		const firstMessage = (await channel.messages.fetch({ limit: 1 })).first();
 
 		const embed = new MessageEmbed()
 			.setColor(interaction.guild?.me?.displayColor ?? Colors.Primary)
@@ -119,14 +161,24 @@ export default class implements Command {
 					lng: locale,
 					channel: channel.name,
 				}),
+			)
+			.addField(
+				i18next.t('commands.archive.embeds.log.fields.channel_info.title', { lng: locale }),
+				i18next.t('commands.archive.embeds.log.fields.channel_info.value', {
+					lng: locale,
+					channel_age: formatDistanceToNow(channel.createdAt),
+					first_message_author: firstMessage?.author.tag ?? 'Unknown',
+					last_message_author: lastMessage?.author.tag ?? 'Unknown',
+				}),
 			);
 
+		const ext = ExportFormatExtensions[format ?? ExportFormat.HtmlDark];
 		const sent = await archiveChannel.send({
 			embeds: [embed],
 			files: [
 				{
 					attachment,
-					name: `${channel.name}.html`,
+					name: `${channel.name}.${ext}`,
 				},
 			],
 		});
@@ -135,7 +187,7 @@ export default class implements Command {
 			embeds: [
 				embed.addField(
 					i18next.t('commands.archive.embeds.log.edit.actions_title', { lng: locale }),
-					i18next.t('commands.archive.embeds.log.edit.actions_content', {
+					i18next.t(`commands.archive.embeds.log.edit.actions_content${ext === 'html' ? '' : 'non_html'}`, {
 						lng: locale,
 						display_html: displayHTML(sent.attachments.first()!.url),
 						download_link: sent.attachments.first()?.url,
