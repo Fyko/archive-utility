@@ -18,6 +18,19 @@ export type Scalars = {
   uuid: string;
 };
 
+/** Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'. */
+export type Int_Comparison_Exp = {
+  _eq?: InputMaybe<Scalars['Int']>;
+  _gt?: InputMaybe<Scalars['Int']>;
+  _gte?: InputMaybe<Scalars['Int']>;
+  _in?: InputMaybe<Array<Scalars['Int']>>;
+  _is_null?: InputMaybe<Scalars['Boolean']>;
+  _lt?: InputMaybe<Scalars['Int']>;
+  _lte?: InputMaybe<Scalars['Int']>;
+  _neq?: InputMaybe<Scalars['Int']>;
+  _nin?: InputMaybe<Array<Scalars['Int']>>;
+};
+
 /** Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'. */
 export type String_Comparison_Exp = {
   _eq?: InputMaybe<Scalars['String']>;
@@ -58,6 +71,7 @@ export type Archive_Utility_Archive = {
   channel_name: Scalars['String'];
   created_at: Scalars['timestamptz'];
   id: Scalars['uuid'];
+  message_count?: Maybe<Scalars['Int']>;
   performed_by: Scalars['String'];
   /** An object relationship */
   server: Archive_Utility_Server;
@@ -75,9 +89,17 @@ export type Archive_Utility_Archive_Aggregate = {
 /** aggregate fields of "archive_utility.archive" */
 export type Archive_Utility_Archive_Aggregate_Fields = {
   __typename?: 'archive_utility_archive_aggregate_fields';
+  avg?: Maybe<Archive_Utility_Archive_Avg_Fields>;
   count: Scalars['Int'];
   max?: Maybe<Archive_Utility_Archive_Max_Fields>;
   min?: Maybe<Archive_Utility_Archive_Min_Fields>;
+  stddev?: Maybe<Archive_Utility_Archive_Stddev_Fields>;
+  stddev_pop?: Maybe<Archive_Utility_Archive_Stddev_Pop_Fields>;
+  stddev_samp?: Maybe<Archive_Utility_Archive_Stddev_Samp_Fields>;
+  sum?: Maybe<Archive_Utility_Archive_Sum_Fields>;
+  var_pop?: Maybe<Archive_Utility_Archive_Var_Pop_Fields>;
+  var_samp?: Maybe<Archive_Utility_Archive_Var_Samp_Fields>;
+  variance?: Maybe<Archive_Utility_Archive_Variance_Fields>;
 };
 
 
@@ -89,9 +111,17 @@ export type Archive_Utility_Archive_Aggregate_FieldsCountArgs = {
 
 /** order by aggregate values of table "archive_utility.archive" */
 export type Archive_Utility_Archive_Aggregate_Order_By = {
+  avg?: InputMaybe<Archive_Utility_Archive_Avg_Order_By>;
   count?: InputMaybe<Order_By>;
   max?: InputMaybe<Archive_Utility_Archive_Max_Order_By>;
   min?: InputMaybe<Archive_Utility_Archive_Min_Order_By>;
+  stddev?: InputMaybe<Archive_Utility_Archive_Stddev_Order_By>;
+  stddev_pop?: InputMaybe<Archive_Utility_Archive_Stddev_Pop_Order_By>;
+  stddev_samp?: InputMaybe<Archive_Utility_Archive_Stddev_Samp_Order_By>;
+  sum?: InputMaybe<Archive_Utility_Archive_Sum_Order_By>;
+  var_pop?: InputMaybe<Archive_Utility_Archive_Var_Pop_Order_By>;
+  var_samp?: InputMaybe<Archive_Utility_Archive_Var_Samp_Order_By>;
+  variance?: InputMaybe<Archive_Utility_Archive_Variance_Order_By>;
 };
 
 /** input type for inserting array relation for remote table "archive_utility.archive" */
@@ -99,6 +129,17 @@ export type Archive_Utility_Archive_Arr_Rel_Insert_Input = {
   data: Array<Archive_Utility_Archive_Insert_Input>;
   /** on conflict condition */
   on_conflict?: InputMaybe<Archive_Utility_Archive_On_Conflict>;
+};
+
+/** aggregate avg on columns */
+export type Archive_Utility_Archive_Avg_Fields = {
+  __typename?: 'archive_utility_archive_avg_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by avg() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Avg_Order_By = {
+  message_count?: InputMaybe<Order_By>;
 };
 
 /** Boolean expression to filter rows from the table "archive_utility.archive". All fields are combined with a logical 'AND'. */
@@ -110,6 +151,7 @@ export type Archive_Utility_Archive_Bool_Exp = {
   channel_name?: InputMaybe<String_Comparison_Exp>;
   created_at?: InputMaybe<Timestamptz_Comparison_Exp>;
   id?: InputMaybe<Uuid_Comparison_Exp>;
+  message_count?: InputMaybe<Int_Comparison_Exp>;
   performed_by?: InputMaybe<String_Comparison_Exp>;
   server?: InputMaybe<Archive_Utility_Server_Bool_Exp>;
   server_id?: InputMaybe<String_Comparison_Exp>;
@@ -122,12 +164,18 @@ export enum Archive_Utility_Archive_Constraint {
   ArchivePkey = 'archive_pkey'
 }
 
+/** input type for incrementing numeric columns in table "archive_utility.archive" */
+export type Archive_Utility_Archive_Inc_Input = {
+  message_count?: InputMaybe<Scalars['Int']>;
+};
+
 /** input type for inserting data into table "archive_utility.archive" */
 export type Archive_Utility_Archive_Insert_Input = {
   channel_id?: InputMaybe<Scalars['String']>;
   channel_name?: InputMaybe<Scalars['String']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
   id?: InputMaybe<Scalars['uuid']>;
+  message_count?: InputMaybe<Scalars['Int']>;
   performed_by?: InputMaybe<Scalars['String']>;
   server?: InputMaybe<Archive_Utility_Server_Obj_Rel_Insert_Input>;
   server_id?: InputMaybe<Scalars['String']>;
@@ -141,6 +189,7 @@ export type Archive_Utility_Archive_Max_Fields = {
   channel_name?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  message_count?: Maybe<Scalars['Int']>;
   performed_by?: Maybe<Scalars['String']>;
   server_id?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
@@ -152,6 +201,7 @@ export type Archive_Utility_Archive_Max_Order_By = {
   channel_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  message_count?: InputMaybe<Order_By>;
   performed_by?: InputMaybe<Order_By>;
   server_id?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -164,6 +214,7 @@ export type Archive_Utility_Archive_Min_Fields = {
   channel_name?: Maybe<Scalars['String']>;
   created_at?: Maybe<Scalars['timestamptz']>;
   id?: Maybe<Scalars['uuid']>;
+  message_count?: Maybe<Scalars['Int']>;
   performed_by?: Maybe<Scalars['String']>;
   server_id?: Maybe<Scalars['String']>;
   updated_at?: Maybe<Scalars['timestamptz']>;
@@ -175,6 +226,7 @@ export type Archive_Utility_Archive_Min_Order_By = {
   channel_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  message_count?: InputMaybe<Order_By>;
   performed_by?: InputMaybe<Order_By>;
   server_id?: InputMaybe<Order_By>;
   updated_at?: InputMaybe<Order_By>;
@@ -202,6 +254,7 @@ export type Archive_Utility_Archive_Order_By = {
   channel_name?: InputMaybe<Order_By>;
   created_at?: InputMaybe<Order_By>;
   id?: InputMaybe<Order_By>;
+  message_count?: InputMaybe<Order_By>;
   performed_by?: InputMaybe<Order_By>;
   server?: InputMaybe<Archive_Utility_Server_Order_By>;
   server_id?: InputMaybe<Order_By>;
@@ -224,6 +277,8 @@ export enum Archive_Utility_Archive_Select_Column {
   /** column name */
   Id = 'id',
   /** column name */
+  MessageCount = 'message_count',
+  /** column name */
   PerformedBy = 'performed_by',
   /** column name */
   ServerId = 'server_id',
@@ -237,9 +292,54 @@ export type Archive_Utility_Archive_Set_Input = {
   channel_name?: InputMaybe<Scalars['String']>;
   created_at?: InputMaybe<Scalars['timestamptz']>;
   id?: InputMaybe<Scalars['uuid']>;
+  message_count?: InputMaybe<Scalars['Int']>;
   performed_by?: InputMaybe<Scalars['String']>;
   server_id?: InputMaybe<Scalars['String']>;
   updated_at?: InputMaybe<Scalars['timestamptz']>;
+};
+
+/** aggregate stddev on columns */
+export type Archive_Utility_Archive_Stddev_Fields = {
+  __typename?: 'archive_utility_archive_stddev_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Stddev_Order_By = {
+  message_count?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_pop on columns */
+export type Archive_Utility_Archive_Stddev_Pop_Fields = {
+  __typename?: 'archive_utility_archive_stddev_pop_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev_pop() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Stddev_Pop_Order_By = {
+  message_count?: InputMaybe<Order_By>;
+};
+
+/** aggregate stddev_samp on columns */
+export type Archive_Utility_Archive_Stddev_Samp_Fields = {
+  __typename?: 'archive_utility_archive_stddev_samp_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by stddev_samp() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Stddev_Samp_Order_By = {
+  message_count?: InputMaybe<Order_By>;
+};
+
+/** aggregate sum on columns */
+export type Archive_Utility_Archive_Sum_Fields = {
+  __typename?: 'archive_utility_archive_sum_fields';
+  message_count?: Maybe<Scalars['Int']>;
+};
+
+/** order by sum() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Sum_Order_By = {
+  message_count?: InputMaybe<Order_By>;
 };
 
 /** update columns of table "archive_utility.archive" */
@@ -253,12 +353,47 @@ export enum Archive_Utility_Archive_Update_Column {
   /** column name */
   Id = 'id',
   /** column name */
+  MessageCount = 'message_count',
+  /** column name */
   PerformedBy = 'performed_by',
   /** column name */
   ServerId = 'server_id',
   /** column name */
   UpdatedAt = 'updated_at'
 }
+
+/** aggregate var_pop on columns */
+export type Archive_Utility_Archive_Var_Pop_Fields = {
+  __typename?: 'archive_utility_archive_var_pop_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by var_pop() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Var_Pop_Order_By = {
+  message_count?: InputMaybe<Order_By>;
+};
+
+/** aggregate var_samp on columns */
+export type Archive_Utility_Archive_Var_Samp_Fields = {
+  __typename?: 'archive_utility_archive_var_samp_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by var_samp() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Var_Samp_Order_By = {
+  message_count?: InputMaybe<Order_By>;
+};
+
+/** aggregate variance on columns */
+export type Archive_Utility_Archive_Variance_Fields = {
+  __typename?: 'archive_utility_archive_variance_fields';
+  message_count?: Maybe<Scalars['Float']>;
+};
+
+/** order by variance() on columns of table "archive_utility.archive" */
+export type Archive_Utility_Archive_Variance_Order_By = {
+  message_count?: InputMaybe<Order_By>;
+};
 
 /** columns and relationships of "archive_utility.server" */
 export type Archive_Utility_Server = {
@@ -513,6 +648,7 @@ export type Mutation_RootInsert_Archive_Utility_Server_OneArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdate_Archive_Utility_ArchiveArgs = {
+  _inc?: InputMaybe<Archive_Utility_Archive_Inc_Input>;
   _set?: InputMaybe<Archive_Utility_Archive_Set_Input>;
   where: Archive_Utility_Archive_Bool_Exp;
 };
@@ -520,6 +656,7 @@ export type Mutation_RootUpdate_Archive_Utility_ArchiveArgs = {
 
 /** mutation root */
 export type Mutation_RootUpdate_Archive_Utility_Archive_By_PkArgs = {
+  _inc?: InputMaybe<Archive_Utility_Archive_Inc_Input>;
   _set?: InputMaybe<Archive_Utility_Archive_Set_Input>;
   pk_columns: Archive_Utility_Archive_Pk_Columns_Input;
 };

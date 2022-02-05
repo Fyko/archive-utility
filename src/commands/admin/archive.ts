@@ -201,6 +201,7 @@ export default class implements Command {
 				channel_name: archiveChannel.id,
 				performed_by: interaction.user.id,
 				server_id: interaction.guildId,
+				message_count: messageCount,
 			},
 		});
 		logger.debug(archiveRecord);
