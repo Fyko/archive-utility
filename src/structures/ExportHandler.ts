@@ -17,7 +17,7 @@ export const ExportFormatExtensions = {
 } as const;
 
 export class ExportHandler {
-	public async createLog(channel_id: string, format = ExportFormat.HtmlDark): Promise<Buffer> {
+	public async createLog(channel_id: string, format = ExportFormat.HtmlDark): Promise<[Buffer, number]> {
 		const request = await fetch(`${process.env.EXPORT_ENDPOINT}/v2/export`, {
 			body: JSON.stringify({ channel_id, token: process.env.DISCORD_TOKEN!, export_format: format }),
 			method: 'POST',
@@ -25,6 +25,7 @@ export class ExportHandler {
 				'Content-Type': 'application/json',
 			},
 		});
-		return request.buffer();
+		const messageCount = parseInt(request.headers.get('x-message-count') ?? '0', 10);
+		return [await request.buffer(), messageCount];
 	}
 }

@@ -2,9 +2,9 @@ import { hasuraClient } from '#hasura';
 import { logger } from '#logger';
 import { Command, ExportFormat, ExportHandler, ExportFormatExtensions } from '#structs';
 import { ArgumentsOf, Colors, displayHTML, kExportHandler } from '#util';
-import { formatDistanceToNow } from 'date-fns';
 import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9';
 import { CommandInteraction, GuildMember, MessageEmbed, Permissions } from 'discord.js';
+import { time } from '@discordjs/builders';
 import i18next from 'i18next';
 import { inject, injectable } from 'tsyringe';
 
@@ -129,7 +129,7 @@ export default class implements Command {
 				lng: locale,
 			}),
 		);
-		const attachment = await this.exportHandler.createLog(channel.id, format);
+		const [attachment, messageCount] = await this.exportHandler.createLog(channel.id, format);
 
 		await interaction.editReply(
 			i18next.t('commands.archive.created', {
@@ -138,8 +138,8 @@ export default class implements Command {
 			}),
 		);
 
-		const lastMessage = (await channel.messages.fetch({ limit: 1, after: channel.id })).first();
-		const firstMessage = (await channel.messages.fetch({ limit: 1 })).first();
+		const firstMessage = (await channel.messages.fetch({ limit: 1, after: channel.id })).first();
+		const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
 
 		const embed = new MessageEmbed()
 			.setColor(interaction.guild?.me?.displayColor ?? Colors.Primary)
@@ -160,15 +160,13 @@ export default class implements Command {
 				i18next.t('commands.archive.embeds.log.description', {
 					lng: locale,
 					channel: channel.name,
-				}),
-			)
-			.addField(
-				i18next.t('commands.archive.embeds.log.fields.channel_info.title', { lng: locale }),
-				i18next.t('commands.archive.embeds.log.fields.channel_info.value', {
-					lng: locale,
-					channel_age: formatDistanceToNow(channel.createdAt),
-					first_message_author: firstMessage?.author.tag ?? 'Unknown',
-					last_message_author: lastMessage?.author.tag ?? 'Unknown',
+					joinArrays: '\n',
+					channel_age: time(channel.createdAt, 'R'),
+					message_count: messageCount.toLocaleString(),
+					first_message_long: time(firstMessage!.createdAt),
+					first_message_relative: time(firstMessage!.createdAt, 'R'),
+					last_message_long: time(lastMessage!.createdAt),
+					last_message_relative: time(lastMessage!.createdAt, 'R'),
 				}),
 			);
 
@@ -187,7 +185,8 @@ export default class implements Command {
 			embeds: [
 				embed.addField(
 					i18next.t('commands.archive.embeds.log.edit.actions_title', { lng: locale }),
-					i18next.t(`commands.archive.embeds.log.edit.actions_content${ext === 'html' ? '' : 'non_html'}`, {
+					i18next.t('commands.archive.embeds.log.edit.actions_content', {
+						context: ext === 'html' ? '' : 'non_html',
 						lng: locale,
 						display_html: displayHTML(sent.attachments.first()!.url),
 						download_link: sent.attachments.first()?.url,
