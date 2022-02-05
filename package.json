@@ -22,7 +22,7 @@
 		"#hasura": "./dist/util/hasura.js"
 	},
 	"author": "Carter Himmel <fyko@sycer.dev>",
-	"license": "GPL-3.0",
+	"license": "MIT",
 	"dependencies": {
 		"@discordjs/builders": "^0.11.0",
 		"@discordjs/collection": "^0.3.2",
