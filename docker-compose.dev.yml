@@ -37,6 +37,9 @@ services:
       HASURA_GRAPHQL_ADMIN_SECRET: 'admin'
       HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: 'true'
       HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS: 'true'
+    volumes:
+      - ./hasura/migrations:/hasura-migrations
+      - ./hasura/metadata:/hasura-metadata
     expose:
       - '8080'
     ports:
