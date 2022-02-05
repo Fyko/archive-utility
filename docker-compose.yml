@@ -5,49 +5,6 @@ services:
     build:
       context: .
     restart: unless-stopped
-    env_file:
-      - ./.env
-    expose: 
-      - "2292"
 
   exportapi:
-    image: fyko/export-api
-    ports:
-      - "2324:80"
-    expose:
-      - "2324"
-
-  postgres:
-    image: postgres:13-alpine
-    restart: unless-stopped
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: sycer
-      POSTGRES_PASSWORD: doctordoctor
-      POSTGRES_DB: archive_utility
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -u postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  hasura:
-    image: hasura/graphql-engine:v2.0.0-beta.2.cli-migrations-v3
-    env_file: ./.env
-    environment:
-      HASURA_GRAPHQL_DATABASE_URL: 'postgresql://sycer:doctordoctor@postgres:5432/archive_utility'
-      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
-      HASURA_GRAPHQL_ENABLED_LOG_TYPES: 'startup, http-log, webhook-log, websocket-log, query-log'
-      HASURA_GRAPHQL_ADMIN_SECRET: 'admin'
-      HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: 'true'
-      HASURA_GRAPHQL_ENABLE_REMOTE_SCHEMA_PERMISSIONS: 'true'
-    expose:
-      - '8080'
-    ports:
-      - '127.0.0.1:8080:8080'
-    depends_on:
-      - postgres
-
-volumes:
-  postgres_data:
+    image: ghcr.io/fyko/export-api:cee1a6f0c5b91efbb6b41578d525b658f26162a2

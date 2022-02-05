@@ -11,6 +11,9 @@ ENV VOLTA_HOME /root/.volta
 # make sure packages managed by volta will be in PATH
 ENV PATH $VOLTA_HOME/bin:$PATH
 
+ENV YARN_CACHE_FOLDER=/usr/local/yarn-cache
+VOLUME /usr/local/yarn-cache
+
 WORKDIR /usr/archive-utility
 
 COPY . .

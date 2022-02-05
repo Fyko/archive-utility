@@ -28,10 +28,18 @@
 					"author": {
 						"name": "Archived by {{- user}}"
 					},
-					"description": "#{{- channel}} has been archived!",
+					"description": [
+						"#{{- channel}} has been archived!",
+						"",
+						"Channel created: {{- channel_age}}",
+						"Message count: `{{message_count}}`",
+						"First message: {{- first_message_long}} ({{- first_message_relative}})",
+						"Last message: {{- last_message_long}} ({{- last_message_relative}})"
+					],
 					"edit": {
 						"actions_title": "Actions",
 						"actions_content": "**[(Open in Browser)]({{- display_html}})** - **[(Download Archive)]({{- download_link}})**",
+						"actions_content_non_html": "**[(Download Archive)]({{- download_link}})**",
 						"open_in_browser": "Open In Browser",
 						"download_archive": "Download Archive"
 					}
