@@ -1,12 +1,14 @@
 import { hasuraClient } from '#hasura';
 import { logger } from '#logger';
-import { Command, ExportFormat, ExportHandler, ExportFormatExtensions } from '#structs';
+import { Command, ExportFormatExtensions } from '#structs';
 import { ArgumentsOf, Colors, displayHTML, kExportHandler } from '#util';
 import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9';
 import { CommandInteraction, GuildMember, MessageEmbed, Permissions } from 'discord.js';
 import { time } from '@discordjs/builders';
 import i18next from 'i18next';
 import { inject, injectable } from 'tsyringe';
+import { ExporterClient } from '@fyko/export-api/client';
+import { CreateExportRequest, CreateExportResponse, ExportFormat } from '@fyko/export-api/types';
 
 const data = {
 	name: 'archive',
@@ -37,15 +39,15 @@ const data = {
 			choices: [
 				{
 					name: 'Dark Mode',
-					value: ExportFormat.HtmlDark,
+					value: ExportFormat.HTMLDARK,
 				},
 				{
 					name: 'Light Mode',
-					value: ExportFormat.HtmlLight,
+					value: ExportFormat.HTMLLIGHT,
 				},
 				{
 					name: 'Plain Text (TXT)',
-					value: ExportFormat.PlainText,
+					value: ExportFormat.PLAINTEXT,
 				},
 				{
 					name: 'CSV',
@@ -62,7 +64,7 @@ const data = {
 
 @injectable()
 export default class implements Command {
-	public constructor(@inject(kExportHandler) public readonly exportHandler: ExportHandler) {}
+	public constructor(@inject(kExportHandler) public readonly exportHandler: ExporterClient) {}
 
 	public readonly data = data;
 
@@ -129,14 +131,65 @@ export default class implements Command {
 				lng: locale,
 			}),
 		);
-		const [attachment, messageCount] = await this.exportHandler.createLog(channel.id, format);
 
-		await interaction.editReply(
-			i18next.t('commands.archive.created', {
-				lng: locale,
-				channel: archiveChannel.toString(),
-			}),
-		);
+		const request = new CreateExportRequest();
+		request.setToken(interaction.client.token!);
+		request.setChannelId(channel.id);
+		request.setExportFormat(format ?? ExportFormat.HTMLDARK);
+
+		const stream = this.exportHandler.createExport(request);
+
+		const handleProgressChange = (progress: number) => {
+			return interaction.editReply(
+				i18next.t('commands.archive.progress', {
+					lng: locale,
+					progress: (progress * 100).toFixed(),
+				}),
+			);
+		};
+
+		let attachment = Buffer.from('', 'base64');
+		let messageCount = 0;
+		await new Promise((resolve, reject) => {
+			let progress = 0;
+
+			const progressInterval = setInterval(() => {
+				void handleProgressChange(progress);
+			}, 3000);
+
+			stream.on('data', (response: CreateExportResponse) => {
+				const p = response.getProgress();
+				if (p && p > progress) {
+					progress = p;
+
+					if (progress === 1) {
+						clearInterval(progressInterval);
+						void interaction.editReply(
+							i18next.t('commands.archive.created', {
+								lng: locale,
+								channel: archiveChannel.toString(),
+							}),
+						);
+					}
+				}
+
+				const data = response.getData();
+				const inner = data?.getData();
+				if (inner && inner instanceof Uint8Array) {
+					attachment = Buffer.concat([attachment, Buffer.from(inner)]);
+				}
+
+				const _messageCount = data?.getMessageCount();
+				if (_messageCount) messageCount = _messageCount;
+			});
+
+			stream.on('end', () => {
+				clearInterval(progressInterval);
+				return resolve(void 0);
+			});
+
+			stream.on('error', reject);
+		});
 
 		const firstMessage = (await channel.messages.fetch({ limit: 1, after: channel.id })).first();
 		const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
@@ -170,7 +223,7 @@ export default class implements Command {
 				}),
 			);
 
-		const ext = ExportFormatExtensions[format ?? ExportFormat.HtmlDark];
+		const ext = ExportFormatExtensions[format ?? ExportFormat.HTMLDARK];
 		const sent = await archiveChannel.send({
 			embeds: [embed],
 			files: [
