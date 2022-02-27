@@ -11,7 +11,9 @@
 			"archive_channel_deleted": "The archive channel no longer exists. Please set one with `/set-archive`.",
 			"only_archive_text": "You can only archive text channels!",
 			"creating": "Creating archive...",
-			"created": "Archive created! Sending to {{- channel}}...",
+			"progress": "Creating archive... (`{{progress}}%`)",
+			"retrieving": "Archive created! Retrieving...",
+			"created": "Archive retrieved! Sending to {{- channel}}...",
 			"done": "Successfully archived `#{{channel}}`!\n<{{- sent_url}}>",
 			"perms": {
 				"client": {

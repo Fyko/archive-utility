@@ -7,4 +7,4 @@ services:
     restart: unless-stopped
 
   exportapi:
-    image: ghcr.io/fyko/export-api:cee1a6f0c5b91efbb6b41578d525b658f26162a2
+    image: ghcr.io/fyko/export-api:latest

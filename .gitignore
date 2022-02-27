@@ -67,3 +67,4 @@ dist/
 
 # editor configurations
 .vscode/
+.yarn/install-state.gz

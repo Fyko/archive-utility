@@ -1,7 +1,7 @@
 process.env.NODE_ENV ??= 'development';
 import 'reflect-metadata';
 
-import { Command, Listener, REST, ExportHandler } from '#structs';
+import { Command, Listener, REST } from '#structs';
 import { kCommands, kListeners, kMetrics, kREST, loadCommands, loadListeners, kExportHandler } from '#util';
 import Collection from '@discordjs/collection';
 import { Client, Intents, Options } from 'discord.js';
@@ -10,6 +10,8 @@ import { container } from 'tsyringe';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import { fileURLToPath, URL } from 'url';
+import { ExporterClient } from '@fyko/export-api/client';
+import { credentials } from '@grpc/grpc-js';
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -17,6 +19,8 @@ const client = new Client({
 		MessageManager: 5,
 	}),
 });
+const exportClient = new ExporterClient(process.env.EXPORT_ENDPOINT!, credentials.createInsecure());
+
 const commands = new Collection<string, Command>();
 const listeners = new Collection<string, Listener>();
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN!);
@@ -53,7 +57,7 @@ container.register(kCommands, { useValue: commands });
 container.register(kListeners, { useValue: listeners });
 container.register(kREST, { useValue: rest });
 container.register(kMetrics, { useValue: prometheus });
-container.register(kExportHandler, { useValue: new ExportHandler() });
+container.register(kExportHandler, { useValue: exportClient });
 
 async function start() {
 	await i18next.use(Backend).init({
