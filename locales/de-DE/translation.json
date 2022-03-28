@@ -1,0 +1,74 @@
+{
+	"common": {
+		"errors": {
+			"guild_only_command": "This command can only be used in a server!",
+			"no_archive_channel": ""
+		}
+	},
+	"commands": {
+		"archive": {
+			"no_archive_channel": "There is no archive channel set! Please set one with `/set-archive`.",
+			"archive_channel_deleted": "The archive channel no longer exists. Please set one with `/set-archive`.",
+			"only_archive_text": "You can only archive text channels!",
+			"creating": "Creating archive...",
+			"progress": "Creating archive... (`{{progress}}%`)",
+			"retrieving": "Archive created! Retrieving...",
+			"created": "Archive retrieved! Sending to {{- channel}}...",
+			"done": "Successfully archived `#{{channel}}`!\n<{{- sent_url}}>",
+			"perms": {
+				"client": {
+					"cant_send_archive": "I don't have enough permissions to send messages in {{channel}}! Please make sure I have `Send Messages`, `Embed Links` and `Attach Files`.",
+					"cant_delete": "I don't have enough permissions to delete {{- channel}}."
+				},
+				"user": {
+					"no_perms": "You don't have the necessary permissions to archive {{- channel}}."
+				}
+			},
+			"embeds": {
+				"log": {
+					"title": "Archived Channel",
+					"author": {
+						"name": "Archived by {{- user}}"
+					},
+					"description": [
+						"#{{- channel}} has been archived!",
+						"",
+						"Channel created: {{- channel_age}}",
+						"Message count: `{{message_count}}`",
+						"First message: {{- first_message_long}} ({{- first_message_relative}})",
+						"Last message: {{- last_message_long}} ({{- last_message_relative}})"
+					],
+					"edit": {
+						"actions_title": "Actions",
+						"actions_content": "**[(Open in Browser)]({{- display_html}})** - **[(Download Archive)]({{- download_link}})**",
+						"actions_content_non_html": "**[(Download Archive)]({{- download_link}})**",
+						"open_in_browser": "Open In Browser",
+						"download_archive": "Download Archive"
+					}
+				}
+			}
+		},
+		"set_archive": {
+			"errors": {
+				"text_only": "The archive channel must be a text channel!"
+			},
+			"none_set": "There is no configured archive channel log.",
+			"currently_set": "Exported channels are currently being posted in {{- channel}}.",
+			"successfuly_set": "Successfully set the archived channel log to {{- channel}}.",
+			"perms": {
+				"user": {
+					"cant_set": "You don't have the necessary permissions to configure the archive channel."
+				}
+			}
+		}
+	},
+	"events": {
+		"guild_create": {
+			"embeds": {
+				"invited": {
+					"description": "Hey there, I'm {{client_name}}! Thanks for inviting me to your sever. For more information on how to archive your channels, run `/guide`!"
+				}
+			}
+		}
+	}
+}
