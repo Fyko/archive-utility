@@ -2,6 +2,8 @@ version: '2.4'
 
 services:
   bot:
+    build:
+      context: .
     env_file:
       - "./.env.prod"
     ports: 
