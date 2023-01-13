@@ -2,4 +2,4 @@
 stage="$1"
 shift
 rest="$@"
-docker-compose -f docker-compose.yml -f docker-compose.$stage.yml $rest
+docker-compose -f docker-compose.$stage.yml $rest
