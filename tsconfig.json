@@ -4,14 +4,14 @@
 		"baseUrl": ".",
 		"alwaysStrict": true,
 		"lib": ["esnext"],
-		"module": "ESNext",
+		"module": "Node16",
 		"noUnusedParameters": true,
 		"sourceMap": true,
 		"skipLibCheck": true,
-		"moduleResolution": "node",
+		"moduleResolution": "Node16",
 		"noUnusedLocals": true,
 		"removeComments": false,
-		"target": "ES2020",
+		"target": "ES2021",
 		"strictNullChecks": true,
 		"outDir": "dist",
 		"esModuleInterop": true,
@@ -19,10 +19,10 @@
 		"emitDecoratorMetadata": true,
 		"paths": {
 			"#util": ["src/util/index.ts"],
+			"#util/*": ["src/util/*.ts"],
 			"#structs": ["src/structures/index.ts"],
 			"#const": ["src/util/constants.ts"],
-			"#logger": ["src/util/logger.ts"],
-			"#hasura": ["src/util/hasura.ts"]
+			"#logger": ["src/util/logger.ts"]
 		}
 	},
 	"exclude": [

@@ -1,33 +1,51 @@
-import { hasuraClient } from '#hasura';
-import { ArgumentsOf, list } from '#util';
 import { inlineCode } from '@discordjs/builders';
-import { CommandInteraction, Permissions } from 'discord.js';
-import type { data } from '../../../config';
+import type { CommandInteraction} from 'discord.js';
+import { PermissionsBitField } from 'discord.js';
+import type { Sql } from 'postgres';
+import { container } from 'tsyringe';
+import type { data } from '../../../config.js';
+import { kSQL, list } from '#util';
+import type { ArgumentsOf} from '#util';
+import type { ServerSettings } from '#util/db';
 
 export async function archiveChannel(
 	interaction: CommandInteraction<'cached'>,
 	{ channel }: ArgumentsOf<typeof data>['set']['archive-channel'],
 ) {
-	await hasuraClient.UpsertServer({ id: interaction.guildId });
+	const sql = container.resolve<Sql>(kSQL);
 
-	const update = (archive_id: string | null = null) =>
-		hasuraClient.UpdateArchiveChannel({ server_id: interaction.guildId, archive_id });
+	const _settings = await sql<ServerSettings[]>`
+		select * from "archive_utility"."server" where id = ${interaction.guildId}
+	`;
+	let settings = _settings.count ? _settings[0] : null;
+
+	if (!settings) {
+		const upsert = await sql<ServerSettings[]>`
+			insert into "archive_utility"."server" (id) values (${interaction.guildId})
+			returning *;
+		`;
+		settings = upsert[0];
+	}
+
+	const update = (archive_id: string | null = null) => sql`
+		update "archive_utility"."server" set archive_channel = ${archive_id} where id = ${interaction.guildId}
+	`;
 
 	if (!channel) {
 		await update(null);
 		return interaction.editReply(`Successfully removed the configured archive channel.`);
 	}
 
-	if (!channel.isText()) return interaction.editReply(`${channel.toString()} must be a text channel!`);
+	if (!channel.isTextBased()) return interaction.editReply(`${channel.toString()} must be a text channel!`);
 	if (
 		!channel
 			.permissionsFor(interaction.client.user!.id)
 			?.has([
-				Permissions.FLAGS.VIEW_CHANNEL,
-				Permissions.FLAGS.READ_MESSAGE_HISTORY,
-				Permissions.FLAGS.SEND_MESSAGES,
-				Permissions.FLAGS.ATTACH_FILES,
-				Permissions.FLAGS.EMBED_LINKS,
+				PermissionsBitField.Flags.ViewChannel,
+				PermissionsBitField.Flags.ReadMessageHistory,
+				PermissionsBitField.Flags.SendMessages,
+				PermissionsBitField.Flags.AttachFiles,
+				PermissionsBitField.Flags.EmbedLinks,
 			])
 	)
 		return interaction.editReply(

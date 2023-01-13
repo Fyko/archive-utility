@@ -1,7 +1,0 @@
-table:
-  name: archive
-  schema: archive_utility
-object_relationships:
-- name: server
-  using:
-    foreign_key_constraint_on: server_id

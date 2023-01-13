@@ -1,14 +1,18 @@
 {
-	"extends": "marine/prettier/node",
+	"extends": ["neon/common", "neon/node", "neon/typescript", "neon/prettier"],
+	"parserOptions": {
+		"project": "./tsconfig.json"
+	},
 	"rules": {
 		"comma-dangle": [
 			"error",
 			"always-multiline"
 		],
-		"@typescript-eslint/naming-convention": "off",
-		"@typescript-eslint/ban-types": "off",
-		"@typescript-eslint/restrict-template-expressions": "off",
-		"@typescript-eslint/no-base-to-string": "off",
-		"@typescript-eslint/space-before-function-paren": "off"
+		"@typescript-eslint/naming-convention": 0,
+		"@typescript-eslint/ban-types": 0,
+		"@typescript-eslint/restrict-template-expressions": 0,
+		"@typescript-eslint/no-base-to-string": 0,
+		"@typescript-eslint/space-before-function-paren": 0,
+		"tsdoc/syntax": 0
 	}
 }

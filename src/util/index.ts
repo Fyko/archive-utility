@@ -1,31 +1,30 @@
-import fetch from 'node-fetch';
-import { logger } from '#logger';
-import { fileURLToPath, URL, URLSearchParams } from 'url';
+import { extname } from 'node:path';
+import process from 'node:process';
+import { fileURLToPath, URL, URLSearchParams } from 'node:url';
+import type { Collection } from '@discordjs/collection';
 import { scan } from 'fs-nextra';
-import { extname } from 'path';
+import fetch from 'node-fetch';
 import { container } from 'tsyringe';
+import { logger } from '#logger';
 import type { Command, Listener } from '#structs';
-import type Collection from '@discordjs/collection';
 
-export * from './symbols';
-export * from './types';
-export * from './constants';
-export * from './logger';
+export * from './symbols.js';
+export * from './types/index.js';
+export * from './constants.js';
+export * from './logger.js';
 
 export async function postHaste(code: string, lang?: string): Promise<string> {
-	try {
-		if (code.length > 400000) {
-			return 'Document exceeds maximum length.';
-		}
-		const res = await fetch('https://paste.nomsy.net/documents', { method: 'POST', body: code });
-		const { key, message } = await res.json();
-		if (!key) {
-			return message;
-		}
-		return `https://paste.nomsy.net/${key}${lang && `.${lang}`}`;
-	} catch (err) {
-		throw err;
+	if (code.length > 400_000) {
+		return 'Document exceeds maximum length.';
 	}
+
+	const res = await fetch('https://paste.nomsy.net/documents', { method: 'POST', body: code });
+	const { key, message } = await res.json() as { key: string; message: string };
+	if (!key) {
+		return message;
+	}
+
+	return `https://paste.nomsy.net/${key}${lang && `.${lang}`}`;
 }
 
 export function list(arr: string[], conj = 'and'): string {
@@ -37,17 +36,17 @@ export function list(arr: string[], conj = 'and'): string {
 }
 
 export function displayHTML(attachmentUri: string, displayAt = process.env.DISPLAY_HTML_URL): string {
-	const q = new URLSearchParams();
-	q.set('uri', attachmentUri);
+	const query = new URLSearchParams();
+	query.set('uri', attachmentUri);
 
-	return `${displayAt}?${q}`;
+	return `${displayAt}?${query}`;
 }
 
 async function walk(path: string, notInclude: string[] = []) {
 	return (
 		await scan(path, {
 			filter: (stats, path) =>
-				stats.isFile() && ['.js', '.ts'].includes(extname(stats.name)) && !notInclude.some((n) => path.includes(n)),
+				stats.isFile() && ['.js', '.ts'].includes(extname(stats.name)) && !notInclude.some((not) => path.includes(not)),
 		})
 	).keys();
 }

@@ -1,2 +1,2 @@
-export * from './ArgumentsOf';
-export * from './InteractionOptions';
+export * from './ArgumentsOf.js';
+export * from './InteractionOptions.js';

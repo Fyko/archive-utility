@@ -1,13 +1,16 @@
-import express, { Application, Request, Response } from 'express';
+import process from 'node:process';
+import type { Application, Request, Response } from 'express';
+import express from 'express';
 import helmet from 'helmet';
-import { logger } from '#logger';
 import { inject, injectable } from 'tsyringe';
-import { kMetrics } from '../util';
-import type { Metrics } from '../';
+import { Metrics } from '../index.js';
+import { logger } from '#logger';
+import { kMetrics } from '#util';
 
 @injectable()
 export class API {
 	public app: Application = express();
+
 	protected readonly port: number = Number(process.env.API_PORT!);
 
 	public constructor(@inject(kMetrics) public readonly metrics: Metrics) {}
@@ -41,7 +44,7 @@ export class API {
 
 	public async init(): Promise<this> {
 		this._setup();
-		await this._listen();
+		this._listen();
 		return this;
 	}
 }

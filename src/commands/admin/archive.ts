@@ -1,14 +1,27 @@
-import { hasuraClient } from '#hasura';
-import { logger } from '#logger';
-import { Command, ExportFormatExtensions } from '#structs';
-import { ArgumentsOf, Colors, displayHTML, kExportHandler } from '#util';
-import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9';
-import { CommandInteraction, GuildMember, MessageEmbed, Permissions } from 'discord.js';
+import { Buffer } from 'node:buffer';
+import { clearInterval, setInterval, setTimeout } from 'node:timers';
 import { time } from '@discordjs/builders';
-import i18next from 'i18next';
-import { inject, injectable } from 'tsyringe';
 import { ExporterClient } from '@fyko/export-api/client';
-import { CreateExportRequest, CreateExportResponse, ExportFormat } from '@fyko/export-api/types';
+import { CreateExportRequest, type CreateExportResponse, ExportFormat } from '@fyko/export-api/types';
+import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9';
+import { EmbedBuilder, PermissionsBitField } from 'discord.js';
+import type { GuildMember, ChatInputCommandInteraction } from 'discord.js';
+import i18next from 'i18next';
+import { Sql } from 'postgres';
+import { inject, injectable } from 'tsyringe';
+import { logger } from '#logger';
+import type { Command } from '#structs';
+import { Colors, displayHTML, kExportClient, kSQL } from '#util';
+import type { ArgumentsOf} from '#util';
+import type { ArchiveRecord, ServerSettings } from '#util/db';
+
+export const ExportFormatExtensions = {
+	[ExportFormat.PLAINTEXT]: 'txt',
+	[ExportFormat.HTMLDARK]: 'html',
+	[ExportFormat.HTMLLIGHT]: 'html',
+	[ExportFormat.CSV]: 'csv',
+	[ExportFormat.JSON]: 'json',
+} as const;
 
 const data = {
 	name: 'archive',
@@ -64,31 +77,40 @@ const data = {
 
 @injectable()
 export default class implements Command {
-	public constructor(@inject(kExportHandler) public readonly exportHandler: ExporterClient) {}
+	public constructor(
+		@inject(kExportClient) public readonly exportHandler: ExporterClient,
+		@inject(kSQL) public readonly sql: Sql,
+	) {}
 
 	public readonly data = data;
 
 	public async exec(
-		interaction: CommandInteraction,
+		interaction: ChatInputCommandInteraction<'cached'>,
 		{ channel, cleanup, format, archive }: ArgumentsOf<typeof data>,
 		locale: string,
 	) {
-		if (!interaction.inGuild())
-			return interaction.reply({ content: i18next.t('common.errors.guild_only_command', { lng: locale }) });
-
-		if (!(interaction.member as GuildMember).permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+		if (!(interaction.member as GuildMember).permissions.has(PermissionsBitField.Flags.ManageChannels)) {
 			return interaction.reply({
-				content: i18next.t('commands.archive.perms.user.no_perms', { lng: locale, channel: channel.toString() }),
+				content: i18next.t('commands.archive.perms.user.no_perms', { lng: locale, channel: channel.toString() })!,
 				ephemeral: true,
 			});
 		}
 
-		const { insert_archive_utility_server } = await hasuraClient.UpsertServer({ id: interaction.guildId });
-		const settings = insert_archive_utility_server?.returning[0];
+		// fetch the guild settings and if it doesnt exist, create a new one
+		const _settings = await this.sql<ServerSettings[]>`
+			select * from "archive_utility"."server" where id = ${interaction.guildId}
+		`;
+		const settings = _settings.count ? _settings[0] : null;
+
+		if (!settings) {
+			await this.sql`
+				insert into "archive_utility"."server" (id) values (${interaction.guildId})
+			`;
+		}
 
 		if (!settings?.archive_channel) {
 			return interaction.reply({
-				content: i18next.t('commands.archive.no_archive_channel', { lng: locale }),
+				content: i18next.t('commands.archive.no_archive_channel', { lng: locale })!,
 				ephemeral: true,
 			});
 		}
@@ -96,9 +118,9 @@ export default class implements Command {
 		const archiveChannel =
 			archive ?? (await interaction.guild?.channels.fetch(settings.archive_channel).catch(() => null));
 
-		if (!archiveChannel?.isText()) {
+		if (!archiveChannel?.isTextBased()) {
 			return interaction.reply({
-				content: i18next.t('commands.archive.archive_channel_deleted', { lng: locale }),
+				content: i18next.t('commands.archive.archive_channel_deleted', { lng: locale })!,
 				ephemeral: true,
 			});
 		}
@@ -106,30 +128,30 @@ export default class implements Command {
 		if (
 			!archiveChannel
 				.permissionsFor(interaction.client.user!.id)
-				?.has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS, Permissions.FLAGS.ATTACH_FILES])
+				?.has([PermissionsBitField.Flags.SendMessages, PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.AttachFiles])
 		) {
 			return interaction.reply({
 				content: i18next.t('commands.archive.perms.client.cant_send_archive', {
 					lng: locale,
 					channel: channel.toString(),
-				}),
+				})!,
 				ephemeral: true,
 			});
 		}
 
-		if (!channel.deletable || !channel.isText())
+		if (!channel.deletable || !channel.isTextBased())
 			return interaction.reply({
 				content: i18next.t('commands.archive.perms.client.cant_delete', {
 					lng: locale,
 					channel: channel.toString(),
-				}),
+				})!,
 				ephemeral: true,
 			});
 
 		await interaction.reply(
 			i18next.t('commands.archive.creating', {
 				lng: locale,
-			}),
+			})!,
 		);
 
 		const request = new CreateExportRequest();
@@ -139,12 +161,12 @@ export default class implements Command {
 
 		const stream = this.exportHandler.createExport(request);
 
-		const handleProgressChange = (progress: number) => {
+		const handleProgressChange = async (progress: number) => {
 			return interaction.editReply(
 				i18next.t('commands.archive.progress', {
 					lng: locale,
-					progress: (progress * 100).toFixed(),
-				}),
+					progress: progress.toFixed(2),
+				})!,
 			);
 		};
 
@@ -155,12 +177,12 @@ export default class implements Command {
 
 			const progressInterval = setInterval(() => {
 				void handleProgressChange(progress);
-			}, 3000);
+			}, 2_000);
 
 			stream.on('data', (response: CreateExportResponse) => {
-				const p = response.getProgress();
-				if (p && p > progress) {
-					progress = p;
+				const progressRes = response.getProgress();
+				if (progressRes && progressRes > progress) {
+					progress = progressRes;
 
 					if (progress === 1) {
 						clearInterval(progressInterval);
@@ -168,7 +190,7 @@ export default class implements Command {
 							i18next.t('commands.archive.created', {
 								lng: locale,
 								channel: archiveChannel.toString(),
-							}),
+							})!,
 						);
 					}
 				}
@@ -185,7 +207,7 @@ export default class implements Command {
 
 			stream.on('end', () => {
 				clearInterval(progressInterval);
-				return resolve(void 0);
+				resolve(void 0);
 			});
 
 			stream.on('error', reject);
@@ -194,8 +216,8 @@ export default class implements Command {
 		const firstMessage = (await channel.messages.fetch({ limit: 1, after: channel.id })).first();
 		const lastMessage = (await channel.messages.fetch({ limit: 1 })).first();
 
-		const embed = new MessageEmbed()
-			.setColor(interaction.guild?.me?.displayColor ?? Colors.Primary)
+		const embed = new EmbedBuilder()
+			.setColor(interaction.guild?.members?.me?.displayColor ?? Colors.Primary)
 			.setTimestamp()
 			.setTitle(
 				i18next.t('commands.archive.embeds.log.title', {
@@ -207,7 +229,7 @@ export default class implements Command {
 					lng: locale,
 					user: interaction.user.tag,
 				}),
-				iconURL: interaction.user.displayAvatarURL({ size: 2048 }),
+				iconURL: interaction.user.displayAvatarURL({ size: 2_048 }),
 			})
 			.setDescription(
 				i18next.t('commands.archive.embeds.log.description', {
@@ -236,37 +258,36 @@ export default class implements Command {
 
 		await sent.edit({
 			embeds: [
-				embed.addField(
-					i18next.t('commands.archive.embeds.log.edit.actions_title', { lng: locale }),
-					i18next.t('commands.archive.embeds.log.edit.actions_content', {
+				embed.addFields(
+					{ name: i18next.t('commands.archive.embeds.log.edit.actions_title', { lng: locale }),
+					 value: i18next.t('commands.archive.embeds.log.edit.actions_content', {
 						context: ext === 'html' ? '' : 'non_html',
 						lng: locale,
 						display_html: displayHTML(sent.attachments.first()!.url),
 						download_link: sent.attachments.first()?.url,
-					}),
+					})},
 				),
 			],
 		});
 
-		const archiveRecord = await hasuraClient.CreateArchive({
-			options: {
-				channel_id: archiveChannel.id,
-				channel_name: archiveChannel.id,
-				performed_by: interaction.user.id,
-				server_id: interaction.guildId,
-				message_count: messageCount,
-			},
-		});
-		logger.debug(archiveRecord);
+		// create archive record
+		const record = (
+			await this.sql<ArchiveRecord[]>`
+			insert into "archive_utility"."archive" ("channel_id", "channel_name", "performed_by", "server_id", "message_count")
+			values (${archiveChannel.id}, ${archiveChannel.name}, ${interaction.user.id}, ${interaction.guildId}, ${messageCount})
+			returning *;
+		`
+		)[0];
+		logger.debug(record);
 
-		if (cleanup === true) setTimeout(() => void channel.delete(), 5000);
+		if (cleanup === true) setTimeout(() => void channel.delete(), 5_000);
 
 		return interaction.editReply(
 			i18next.t('commands.archive.done', {
 				lng: locale,
 				channel: channel.name,
 				sent_url: sent.url,
-			}),
+			})!,
 		);
 	}
 }

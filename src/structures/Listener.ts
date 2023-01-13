@@ -1,7 +1,7 @@
-import type { ConstantsEvents } from 'discord.js';
+import type { Events } from 'discord.js';
 
-export interface Listener {
-	readonly event: ConstantsEvents[keyof ConstantsEvents];
+export type Listener = {
+	readonly event: Events;
 
-	exec(...args: unknown[]): unknown | Promise<unknown>;
+	exec(...args: unknown[]): Promise<unknown> | unknown;
 }

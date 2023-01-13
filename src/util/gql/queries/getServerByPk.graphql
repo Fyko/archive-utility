@@ -1,8 +1,0 @@
-query GetServerByPk($id: String!) {
-  archive_utility_server_by_pk(id: $id) {
-    id
-    created_at
-    updated_at
-    archive_channel
-  }
-}

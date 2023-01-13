@@ -1,12 +1,13 @@
+import type { CommandInteraction} from 'discord.js';
+import { Client, Collection, Events } from 'discord.js';
+import { inject, injectable } from 'tsyringe';
 import { logger } from '#logger';
 import type { Command, Listener } from '#structs';
 import { kCommands, transformArguments } from '#util';
-import { Client, Collection, CommandInteraction, Constants } from 'discord.js';
-import { inject, injectable } from 'tsyringe';
 
 @injectable()
 export default class implements Listener {
-	public readonly event = Constants.Events.INTERACTION_CREATE;
+	public readonly event = Events.InteractionCreate;
 
 	public constructor(
 		public readonly client: Client<true>,
@@ -33,7 +34,7 @@ export default class implements Listener {
 				if (typeof result !== 'boolean') {
 					logger.info(`Predicate failed @ ${info}; code: ${result.code}`);
 					if (result.message) {
-						return interaction.reply({ content: result.message, ephemeral: true });
+						return void interaction.reply({ content: result.message, ephemeral: true });
 					}
 				}
 			}
@@ -41,8 +42,8 @@ export default class implements Listener {
 			try {
 				await command.exec(interaction, transformArguments(interaction.options.data), interaction.locale);
 				logger.info(`Successfully executed ${info}`);
-			} catch (err) {
-				logger.error({ msg: `Failed to execute ${info}`, err });
+			} catch (error) {
+				logger.error({ msg: `Failed to execute ${info}`, err: error });
 			}
 		}
 	};

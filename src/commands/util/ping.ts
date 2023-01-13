@@ -1,5 +1,5 @@
-import type { Command } from '#structs';
 import type { CommandInteraction } from 'discord.js';
+import type { Command } from '#structs';
 
 const data = {
 	name: 'ping',
@@ -9,7 +9,7 @@ const data = {
 export default class implements Command {
 	public readonly data = data;
 
-	public exec(interaction: CommandInteraction) {
+	public async exec(interaction: CommandInteraction) {
 		return interaction.reply({ content: 'Pong!', ephemeral: true });
 	}
 }

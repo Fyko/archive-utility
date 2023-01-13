@@ -1,7 +1,0 @@
-mutation CreateServer($id: String!) {
-  insert_archive_utility_server_one(object: {id: $id}) {
-    id
-    created_at
-    archive_channel
-  }
-}

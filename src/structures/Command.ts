@@ -1,16 +1,16 @@
 import type { CommandInteraction } from 'discord.js';
 
-export interface FailedPredicateResponse {
+export type FailedPredicateResponse = {
 	code: string;
 	message: string;
 }
 
-export interface Command {
-	readonly data: { name: string } & Record<string, unknown>;
+export type Command = {
+	readonly data: Record<string, unknown> & { name: string };
+
+	exec(interaction: CommandInteraction<'cached'>, args: unknown, locale: string): Promise<unknown> | unknown;
 
 	predicate?(
 		interaction: CommandInteraction<'cached'>,
-	): Promise<FailedPredicateResponse> | Promise<boolean> | FailedPredicateResponse | boolean;
-
-	exec(interaction: CommandInteraction<'cached'>, args: unknown, locale: string): unknown | Promise<unknown>;
+	): FailedPredicateResponse | Promise<boolean> | Promise<FailedPredicateResponse> | boolean;
 }

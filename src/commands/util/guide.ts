@@ -1,8 +1,7 @@
-/* eslint-disable prettier/prettier */
-import type { Command } from '#structs';
+import { bold, inlineCode } from '@discordjs/builders';
 import { stripIndents } from 'common-tags';
 import type { CommandInteraction } from 'discord.js';
-import { bold, inlineCode } from '@discordjs/builders';
+import type { Command } from '#structs';
 
 const data = {
 	name: 'guide',
@@ -12,7 +11,7 @@ const data = {
 export default class implements Command {
 	public readonly data = data;
 
-	public exec(interaction: CommandInteraction) {
+	public async exec(interaction: CommandInteraction) {
 		const username = interaction.client.user!.username;
 		const archive = inlineCode('/archive');
 		const setArchive = inlineCode('/config set archive-channel');

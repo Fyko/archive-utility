@@ -8,5 +8,23 @@ services:
       - "2292"
 
   exportapi:
+    image: ghcr.io/fyko/export-api:latest
     expose:
       - "80"
+
+  postgres:
+    image: postgres:13-alpine
+    restart: unless-stopped
+    build:
+      context: docker/postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: doctordoctor
+      POSTGRES_DB: archive_utility
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -u postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

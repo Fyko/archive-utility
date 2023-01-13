@@ -1,10 +1,10 @@
-import { Command } from '#structs';
-import { ArgumentsOf } from '#util';
 import { ApplicationCommandOptionType } from 'discord-api-types/v9';
-import { CommandInteraction } from 'discord.js';
-import { ChannelTypes } from 'discord.js/typings/enums';
-import { set } from './sub/configure/set';
-import { show } from './sub/configure/show';
+import { ChannelType } from 'discord.js';
+import type { CommandInteraction  } from 'discord.js';
+import { set } from './sub/configure/set/index.js';
+import { show } from './sub/configure/show.js';
+import type { Command } from '#structs';
+import type { ArgumentsOf } from '#util';
 
 export const data = {
 	name: 'configure',
@@ -29,7 +29,7 @@ export const data = {
 							name: 'channel',
 							description: 'Which channel to set as the new archive channel.',
 							type: ApplicationCommandOptionType.Channel,
-							channel_types: [ChannelTypes.GUILD_TEXT],
+							channel_types: [ChannelType.GuildText],
 							required: false,
 						},
 					],
@@ -50,6 +50,7 @@ export default class implements Command {
 			case 'show': {
 				return show(interaction);
 			}
+
 			case 'set': {
 				return set(interaction, args.set);
 			}

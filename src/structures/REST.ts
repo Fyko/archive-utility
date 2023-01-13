@@ -1,11 +1,12 @@
 import { REST as DjsRest } from '@discordjs/rest';
-import {
+import type {
 	RESTGetAPIChannelMessageResult,
 	RESTGetAPIUserResult,
 	RESTPatchAPIChannelMessageJSONBody,
 	RESTPatchAPIChannelMessageResult,
 	RESTPostAPIChannelMessageJSONBody,
-	RESTPostAPIChannelMessageResult,
+	RESTPostAPIChannelMessageResult} from 'discord-api-types/v9';
+import {
 	Routes,
 } from 'discord-api-types/v9';
 

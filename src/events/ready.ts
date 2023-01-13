@@ -1,11 +1,11 @@
+import { Client, Events } from 'discord.js';
+import { injectable } from 'tsyringe';
 import { logger } from '#logger';
 import type { Listener } from '#structs';
-import { Client, Constants } from 'discord.js';
-import { injectable } from 'tsyringe';
 
 @injectable()
 export default class implements Listener {
-	public readonly event = Constants.Events.CLIENT_READY;
+	public readonly event = Events.ClientReady;
 
 	public constructor(public readonly client: Client<true>) {}
 
