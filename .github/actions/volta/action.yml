@@ -1,0 +1,14 @@
+name: "Setup Volta"
+description: "Setup Volta"
+runs:
+  using: "composite"
+  steps:
+    - uses: volta-cli/action@v3
+
+    - name: Cache Volta
+      uses: actions/cache@v2
+      with:
+        path: ~/.volta
+        key: volta-${{ runner.os }}-${{ hashFiles('yarn.lock', 'Cargo.lock') }}
+        restore-keys: |
+          volta-${{ runner.os }}-

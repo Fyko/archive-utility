@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: volta-cli/action@v3
+      - name: Setup Volta
+        uses: ./.github/actions/volta
 
       - name: Install dependencies
         uses: ./.github/actions/yarn

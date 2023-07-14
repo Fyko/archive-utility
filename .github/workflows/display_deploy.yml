@@ -13,13 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Volta
+        uses: ./.github/actions/volta
 
       - name: Setup Rust
         uses: ./.github/actions/rust
 
+      - name: Install wrangler
+        run: volta install wrangler
+
       - name: Publish to Production
-        uses: cloudflare/wrangler-action@2.0.0
-        with:
-          apiToken: ${{ secrets.WORKERS_API_TOKEN }}
-          environment: production
-          workingDirectory: ./display
+        env: 
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        working-directory: ./display
+        run: wrangler publish --env production
