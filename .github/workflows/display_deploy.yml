@@ -25,6 +25,6 @@ jobs:
 
       - name: Publish to Production
         env: 
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.WORKERS_API_TOKEN }}
         working-directory: ./display
-        run: wrangler publish --env production
+        run: wrangler deploy --env production
