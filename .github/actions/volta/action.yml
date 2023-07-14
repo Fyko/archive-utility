@@ -4,6 +4,8 @@ runs:
   using: "composite"
   steps:
     - uses: volta-cli/action@v3
+      with:
+        node-version: 18.x
 
     - name: Cache Volta
       uses: actions/cache@v2
