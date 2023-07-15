@@ -25,12 +25,13 @@ pub fn register(router: Router<()>) -> Router<()> {
             Err(_) => return Response::error("Failed to fetch `uri`", 500),
         };
 
-        let stream = res.bytes_stream().map_err(DisplayError::Reqwest);
+        // let stream = res.bytes_stream().map_err(DisplayError::Reqwest);
 
-        let headers = Headers::from_iter(vec![("Content-Type", "text/html")].iter());
-        let response = Response::from_stream(stream)?.with_headers(headers);
+        // let headers = Headers::from_iter(vec![("Content-Type", "text/html")].iter());
+        // let response = Response::from_stream(stream)?.with_headers(headers);
+        Response::from_html(&res.text().await.unwrap())
 
-        Ok(response)
+        // Ok(response)
     })
 }
 
